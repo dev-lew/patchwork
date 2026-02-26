@@ -4,5 +4,8 @@
 # Undo-tree save-files
 *.~undo-tree
 
+# Modified files
+\#*\#
+
 # Virtualenvs
 .venv
