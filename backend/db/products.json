@@ -4,7 +4,7 @@
       "id": "OLJCESPC7Z",
       "name": "Sunglasses",
       "description": "Add a modern touch to your outfits with these sleek aviator sunglasses.",
-      "picture": "/static/img/products/sunglasses.jpg",
+      "picture": "/static/products/sunglasses.jpg",
       "price": 19.99,
       "quantity": 10,
       "categories": ["accessories"]
@@ -13,7 +13,7 @@
       "id": "66VCHSJNUP",
       "name": "Tank Top",
       "description": "Perfectly cropped cotton tank, with a scooped neckline.",
-      "picture": "/static/img/products/tank-top.jpg",
+      "picture": "/static/products/tank-top.jpg",
       "price": 18.99,
       "quantity": 15,
       "categories": ["clothing", "tops"]
@@ -22,7 +22,7 @@
       "id": "1YMWWN1N4O",
       "name": "Watch",
       "description": "This gold-tone stainless steel watch will work with most of your outfits.",
-      "picture": "/static/img/products/watch.jpg",
+      "picture": "/static/products/watch.jpg",
       "price": 109.99,
       "quantity": 5,
       "categories": ["accessories"]
@@ -31,7 +31,7 @@
       "id": "L9ECAV7KIM",
       "name": "Loafers",
       "description": "A neat addition to your summer wardrobe.",
-      "picture": "/static/img/products/loafers.jpg",
+      "picture": "/static/products/loafers.jpg",
       "price": 89.99,
       "quantity": 7,
       "categories": ["footwear"]
@@ -40,7 +40,7 @@
       "id": "2ZYFJ3GM2N",
       "name": "Hairdryer",
       "description": "This lightweight hairdryer has 3 heat and speed settings. It's perfect for travel.",
-      "picture": "/static/img/products/hairdryer.jpg",
+      "picture": "/static/products/hairdryer.jpg",
       "price": 24.99,
       "quantity": 12,
       "categories": ["hair", "beauty"]
@@ -49,7 +49,7 @@
       "id": "0PUK6V6EV0",
       "name": "Candle Holder",
       "description": "This small but intricate candle holder is an excellent gift.",
-      "picture": "/static/img/products/candle-holder.jpg",
+      "picture": "/static/products/candle-holder.jpg",
       "price": 18.99,
       "quantity": 20,
       "categories": ["decor", "home"]
@@ -58,7 +58,7 @@
       "id": "LS4PSXUNUM",
       "name": "Salt & Pepper Shakers",
       "description": "Add some flavor to your kitchen.",
-      "picture": "/static/img/products/salt-and-pepper-shakers.jpg",
+      "picture": "/static/products/salt-and-pepper-shakers.jpg",
       "price": 18.49,
       "quantity": 25,
       "categories": ["kitchen"]
@@ -67,7 +67,7 @@
       "id": "9SIQT8TOJO",
       "name": "Bamboo Glass Jar",
       "description": "This bamboo glass jar can hold 57 oz (1.7 l) and is perfect for any kitchen.",
-      "picture": "/static/img/products/bamboo-glass-jar.jpg",
+      "picture": "/static/products/bamboo-glass-jar.jpg",
       "price": 5.49,
       "quantity": 30,
       "categories": ["kitchen"]
@@ -76,7 +76,7 @@
       "id": "6E92ZMYYFZ",
       "name": "Mug",
       "description": "A simple mug with a mustard interior.",
-      "picture": "/static/img/products/mug.jpg",
+      "picture": "/static/products/mug.jpg",
       "price": 8.99,
       "quantity": 18,
       "categories": ["kitchen"]
@@ -85,7 +85,7 @@
       "id": "QW7K9M2XLP",
       "name": "Denim Jacket",
       "description": "Classic blue denim jacket with a relaxed fit for casual layering.",
-      "picture": "/static/img/products/denim-jacket.jpg",
+      "picture": "/static/products/denim-jacket.jpg",
       "price": 59.99,
       "quantity": 8,
       "categories": ["clothing", "outerwear"]
@@ -94,7 +94,7 @@
       "id": "Z4A1N8FJRT",
       "name": "Canvas Backpack",
       "description": "Durable canvas backpack with multiple compartments for everyday use.",
-      "picture": "/static/img/products/canvas-backpack.jpg",
+      "picture": "/static/products/canvas-backpack.jpg",
       "price": 34.99,
       "quantity": 14,
       "categories": ["accessories", "bags"]
@@ -103,7 +103,7 @@
       "id": "V6K3TQ8MNE",
       "name": "Running Shoes",
       "description": "Lightweight running shoes designed for comfort and daily training.",
-      "picture": "/static/img/products/running-shoes.jpg",
+      "picture": "/static/products/running-shoes.jpg",
       "price": 74.99,
       "quantity": 9,
       "categories": ["footwear"]
@@ -112,7 +112,7 @@
       "id": "D1X8Y2PLSA",
       "name": "Ceramic Vase",
       "description": "Minimalist ceramic vase suitable for fresh or dried flowers.",
-      "picture": "/static/img/products/ceramic-vase.jpg",
+      "picture": "/static/products/ceramic-vase.jpg",
       "price": 22.99,
       "quantity": 11,
       "categories": ["decor", "home"]
@@ -121,7 +121,7 @@
       "id": "H5R2C9UJVE",
       "name": "Throw Blanket",
       "description": "Soft woven throw blanket ideal for couches and reading chairs.",
-      "picture": "/static/img/products/throw-blanket.jpg",
+      "picture": "/static/products/throw-blanket.jpg",
       "price": 29.99,
       "quantity": 13,
       "categories": ["home"]
@@ -130,7 +130,7 @@
       "id": "M8Q4LZ7WYT",
       "name": "Chef Knife",
       "description": "Balanced stainless steel chef knife for everyday kitchen tasks.",
-      "picture": "/static/img/products/chef-knife.jpg",
+      "picture": "/static/products/chef-knife.jpg",
       "price": 39.99,
       "quantity": 16,
       "categories": ["kitchen"]
@@ -139,7 +139,7 @@
       "id": "J2F9E6S0RB",
       "name": "Cutting Board",
       "description": "Solid wood cutting board suitable for food prep and serving.",
-      "picture": "/static/img/products/cutting-board.jpg",
+      "picture": "/static/products/cutting-board.jpg",
       "price": 21.49,
       "quantity": 19,
       "categories": ["kitchen"]
@@ -148,7 +148,7 @@
       "id": "P7U3K5NDXA",
       "name": "Face Moisturizer",
       "description": "Lightweight daily moisturizer formulated for balanced hydration.",
-      "picture": "/static/img/products/face-moisturizer.jpg",
+      "picture": "/static/products/face-moisturizer.jpg",
       "price": 16.99,
       "quantity": 22,
       "categories": ["beauty", "skincare"]
@@ -157,7 +157,7 @@
       "id": "T0C4W8GMYB",
       "name": "Hair Brush",
       "description": "Rounded bristle brush designed for gentle detangling and styling.",
-      "picture": "/static/img/products/hair-brush.jpg",
+      "picture": "/static/products/hair-brush.jpg",
       "price": 12.99,
       "quantity": 17,
       "categories": ["hair", "beauty"]
@@ -166,7 +166,7 @@
       "id": "B3L6QX1KHF",
       "name": "Desk Lamp",
       "description": "Adjustable metal desk lamp suitable for workspaces and bedside tables.",
-      "picture": "/static/img/products/desk-lamp.jpg",
+      "picture": "/static/products/desk-lamp.jpg",
       "price": 27.99,
       "quantity": 12,
       "categories": ["home", "decor"]
@@ -175,7 +175,7 @@
       "id": "Y8N2D5S4VP",
       "name": "Baseball Cap",
       "description": "Cotton baseball cap with an adjustable strap for a comfortable fit.",
-      "picture": "/static/img/products/baseball-cap.jpg",
+      "picture": "/static/products/baseball-cap.jpg",
       "price": 14.99,
       "quantity": 20,
       "categories": ["accessories"]
