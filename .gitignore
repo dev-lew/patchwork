@@ -9,3 +9,6 @@
 
 # Virtualenvs
 .venv
+
+# Credential envs
+.env
