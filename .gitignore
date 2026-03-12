@@ -15,3 +15,7 @@
 
 # Python
 __pycache__
+
+# Mac
+.DS_Store
+__MACOSX/
