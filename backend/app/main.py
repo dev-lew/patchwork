@@ -10,7 +10,7 @@ from app.models import Product
 if (postgres_url := os.getenv("POSTGRES_URL")) is None:
     sys.exit("The POSTGRES_URL env variable must be set.")
 
-engine = create_engine(postgres_url, connect_args={"check_same_thread": False})
+engine = create_engine(postgres_url)
 
 
 def get_session():

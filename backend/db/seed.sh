@@ -2,7 +2,7 @@
 
 set -eu
 
-PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_URL}" -U "${POSTGRES_USER}" "${POSTGRES_DB}" -f schema.sql
+PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_PSQL_URL}" -U "${POSTGRES_USER}" "${POSTGRES_DB}" -f schema.sql
 
 jq -c '.products[]' "products.json" | while read -r product; do
     ID=$(echo "$product" | jq -r '.id')

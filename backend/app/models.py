@@ -3,6 +3,8 @@ from sqlmodel import ARRAY, Column, Field, SQLModel, Text
 
 
 class Product(SQLModel, table=True):
+    __tablename__ = "products"
+
     id: str = Field(primary_key=True)
     name: str
     description: str
