@@ -4,10 +4,11 @@ import sys
 from collections.abc import Sequence
 from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Query
 from sqlalchemy.exc import MultipleResultsFound
 from sqlmodel import Session, create_engine, select
 
+from app.enums import Category
 from app.models import Product
 
 if (postgres_url := os.getenv("POSTGRES_URL")) is None:
@@ -33,8 +34,15 @@ app = FastAPI()
 
 
 @app.get("/products")
-async def get_products(session: SessionDep) -> Sequence[Product]:
-    return session.exec(select(Product)).all()
+async def get_products(
+    session: SessionDep, categories: Annotated[list[Category] | None, Query()] = None
+) -> Sequence[Product]:
+    query = select(Product)
+
+    if categories is not None:
+        query = query.where(Product.categories.overlap(categories))
+
+    return session.exec(query).all()
 
 
 @app.get("/product/{id_}")

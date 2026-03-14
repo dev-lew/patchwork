@@ -1,5 +1,7 @@
 from decimal import Decimal
-from sqlmodel import ARRAY, Column, Field, SQLModel, Text
+
+from sqlmodel import Column, Field, SQLModel, Text
+from sqlalchemy.dialects.postgresql import ARRAY
 
 
 class Product(SQLModel, table=True):
