@@ -8,3 +8,22 @@ CREATE TABLE products (
     categories TEXT[] NOT NULL
 );
 
+CREATE TABLE users (
+    id TEXT PRIMARY KEY,
+    email TEXT,
+);
+
+CREATE TABLE carts (
+    id UUID PRIMARY KEY,
+    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+    session_id TEXT,
+
+    CHECK (user_id IS NOT NULL OR session_id IS NOT NULL)
+);
+
+CREATE TABLE cart_items (
+    cart_id UUID NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
+    product_id TEXT NOT NULL REFERENCES products(id),
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    PRIMARY KEY (cart_id, product_id)
+);
