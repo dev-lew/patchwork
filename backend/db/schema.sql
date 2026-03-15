@@ -10,13 +10,13 @@ CREATE TABLE products (
 
 CREATE TABLE users (
     id TEXT PRIMARY KEY,
-    email TEXT,
+    email TEXT
 );
 
 CREATE TABLE carts (
     id UUID PRIMARY KEY,
     user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
-    session_id TEXT,
+    session_id TEXT
 
     CHECK (user_id IS NOT NULL OR session_id IS NOT NULL)
 );
