@@ -59,6 +59,6 @@ async def get_products(
 @app.get("/product/{id_}")
 async def get_product(id_: str, session: SessionDep) -> Product | None:
     try:
-        return session.exec(select(Product).where(Product.id == id_)).one_or_none()
+        return session.exec(select(Product).where(Product.id_ == id_)).one_or_none()
     except MultipleResultsFound:
         logger.exception("Multiple products found with id=%s.", id_)
