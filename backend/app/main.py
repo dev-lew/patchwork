@@ -100,6 +100,8 @@ async def update_user_email(id: str, email: EmailStr, session: SessionDep, _: Au
 
     user.email = email
 
+    session.commit()
+
 
 @app.delete("/users/{id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(id: str, session: SessionDep, _: AuthDep):
@@ -209,7 +211,6 @@ async def update_cart_item_quantity(
 
     cart_item.quantity = quantity
 
-    session.add(cart_item)
     session.commit()
 
 
