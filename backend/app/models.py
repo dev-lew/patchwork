@@ -10,7 +10,7 @@ from sqlmodel import Column, Field, SQLModel, Text
 class Product(SQLModel, table=True):
     __tablename__ = "products"
 
-    id_: str = Field(primary_key=True)
+    id: str = Field(primary_key=True)
     name: str
     description: str
     picture: str
@@ -22,25 +22,25 @@ class Product(SQLModel, table=True):
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    id_: str = Field(primary_key=True)
+    id: str = Field(primary_key=True)
     email: str
 
 
 class NewUser(SQLModel):
-    id_: str = Field(primary_key=True)
+    id: str = Field(primary_key=True)
     email: EmailStr
 
 
 class Cart(SQLModel, table=True):
     __tablename__ = "carts"
 
-    id_: UUID = Field(primary_key=True)
+    id: UUID = Field(primary_key=True)
     user_id: str | None = Field(default=None, foreign_key="users.id")
     session_id: str | None
 
 
 class NewCart(SQLModel):
-    id_: UUID
+    id: UUID
     user_id: str | None
     session_id: str | None
 
@@ -61,6 +61,5 @@ class CartItem(SQLModel, table=True):
 
 
 class NewCartItem(SQLModel):
-    cart_id: UUID
     product_id: str
     quantity: PositiveInt
