@@ -49,7 +49,7 @@ AuthDep = Annotated[str, Depends(auth_api_key)]
 app = FastAPI()
 
 
-@app.get("/products")
+@app.get("/api/products")
 async def get_products(
     session: SessionDep, categories: Annotated[list[Category] | None, Query()] = None
 ) -> Sequence[Product]:
@@ -61,7 +61,7 @@ async def get_products(
     return session.exec(query).all()
 
 
-@app.get("/products/{id}")
+@app.get("/api/products/{id}")
 async def get_product(id: str, session: SessionDep) -> Product:
     product = session.get(Product, id)
 
@@ -71,7 +71,7 @@ async def get_product(id: str, session: SessionDep) -> Product:
     return product
 
 
-@app.post("/users", status_code=status.HTTP_201_CREATED)
+@app.post("/api/users", status_code=status.HTTP_201_CREATED)
 async def create_user(
     user: NewUser, session: SessionDep, response: Response, _: AuthDep
 ):
@@ -81,7 +81,7 @@ async def create_user(
     response.headers["Location"] = f"/users/{user.id}"
 
 
-@app.get("/users/{id}")
+@app.get("/api/users/{id}")
 async def get_user(id: str, session: SessionDep) -> User:
     user = session.get(User, id)
 
@@ -91,7 +91,7 @@ async def get_user(id: str, session: SessionDep) -> User:
     return user
 
 
-@app.patch("/users/{id}")
+@app.patch("/api/users/{id}")
 async def update_user_email(id: str, email: EmailStr, session: SessionDep, _: AuthDep):
     user = session.get(User, id)
 
@@ -103,7 +103,7 @@ async def update_user_email(id: str, email: EmailStr, session: SessionDep, _: Au
     session.commit()
 
 
-@app.delete("/users/{id}/", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/api/users/{id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(id: str, session: SessionDep, _: AuthDep):
     user = session.get(User, id)
 
@@ -114,7 +114,7 @@ async def delete_user(id: str, session: SessionDep, _: AuthDep):
     session.commit()
 
 
-@app.post("/carts", status_code=status.HTTP_201_CREATED)
+@app.post("/api/carts", status_code=status.HTTP_201_CREATED)
 async def create_cart(
     cart: NewCart, response: Response, session: SessionDep, _: AuthDep
 ):
@@ -124,7 +124,7 @@ async def create_cart(
     response.headers["Location"] = f"/carts/{cart.id}"
 
 
-@app.get("/carts/{id}")
+@app.get("/api/carts/{id}")
 async def get_cart(id: UUID, session: SessionDep, _: AuthDep) -> Cart:
     cart = session.get(Cart, id)
 
@@ -134,7 +134,7 @@ async def get_cart(id: UUID, session: SessionDep, _: AuthDep) -> Cart:
     return cart
 
 
-@app.delete("/carts/{id}/", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/api/carts/{id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_cart(id: UUID, session: SessionDep, _: AuthDep):
     cart = session.get(Cart, id)
 
@@ -145,7 +145,7 @@ async def delete_cart(id: UUID, session: SessionDep, _: AuthDep):
     session.commit()
 
 
-@app.post("/carts/{cart_id}/items", status_code=status.HTTP_201_CREATED)
+@app.post("/api/carts/{cart_id}/items", status_code=status.HTTP_201_CREATED)
 async def create_cart_item(
     cart_id: UUID,
     item: NewCartItem,
@@ -168,7 +168,7 @@ async def create_cart_item(
     response.headers["Location"] = f"/carts/{id}/items/{item.product_id}"
 
 
-@app.get("/carts/{id}/items")
+@app.get("/api/carts/{id}/items")
 async def get_cart_items(
     id: UUID,
     session: SessionDep,
@@ -182,7 +182,7 @@ async def get_cart_items(
     return session.exec(query).all()
 
 
-@app.get("/carts/{id}/items/{product_id}")
+@app.get("/api/carts/{id}/items/{product_id}")
 async def get_cart_item(
     id: UUID,
     product_id: str,
@@ -196,7 +196,7 @@ async def get_cart_item(
     return cart_item
 
 
-@app.patch("/carts/{id}/items/{product_id}")
+@app.patch("/api/carts/{id}/items/{product_id}")
 async def update_cart_item_quantity(
     id: UUID,
     product_id: str,
@@ -214,7 +214,9 @@ async def update_cart_item_quantity(
     session.commit()
 
 
-@app.delete("/carts/{id}/items/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete(
+    "/api/carts/{id}/items/{product_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 async def delete_cart_item(id: UUID, product_id: str, session: SessionDep, _: AuthDep):
     cart_item = session.get(CartItem, (id, product_id))
 
