@@ -5,10 +5,12 @@
     <title>Patchwork Store</title>
     <script src="/static/js/htmx.min.js"></script>
   </head>
-<body>
-  <main>
-    <header>
-      <h1>The Patchwork Store</h1>
-    </header>
-  </main>
-</body>
+  <body>
+    <main>
+      <header>
+        <h1>The Patchwork Store</h1>
+      </header>
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

@@ -5,6 +5,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader
 from pydantic import EmailStr, NonNegativeInt
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import select
@@ -15,7 +16,15 @@ from app.models import Cart, CartItem, NewCart, NewCartItem, NewUser, Product, U
 
 router = APIRouter()
 
-templates = Jinja2Templates(directory="app/html/templates")
+templates = Jinja2Templates(
+    env=Environment(
+        loader=FileSystemLoader("app/html/templates"),
+        # Simplfy whitespace management when templating. Anything
+        # templated will now be left justified
+        trim_blocks=True,
+        lstrip_blocks=True,
+    ),
+)
 
 
 @router.get("/")
