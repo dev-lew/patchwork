@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import EmailStr, NonNegativeInt
 from sqlalchemy.dialects.postgresql import insert
@@ -16,6 +16,11 @@ from app.models import Cart, CartItem, NewCart, NewCartItem, NewUser, Product, U
 router = APIRouter()
 
 templates = Jinja2Templates(directory="app/html/templates")
+
+
+@router.get("/")
+async def index():
+    return RedirectResponse(url="/html/products")
 
 
 @router.get("/html/products", response_class=HTMLResponse)
