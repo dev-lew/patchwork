@@ -59,7 +59,7 @@ interface with it directly. If you do though, see the subcommands in `uv venv`.
 
 ## Hosting
 
-This backend is hosted online with [render][render.com], [here][https://patchwork-backend-v0-0-1.onrender.com].
+This backend is hosted online with [render](render.com), [here](https://patchwork-backend-v0-0-1.onrender.com).
 Render uses the docker image described by the Dockerfile.
 
 We are using the free tier of Render which includes a Postgres instance. The Postgres instance
