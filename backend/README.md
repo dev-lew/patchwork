@@ -2,20 +2,20 @@
 
 ## Design
 
-This is a standard CRUD [fastapi][https://fastapi.tiangolo.com/] backend
+This is a standard CRUD [fastapi](https://fastapi.tiangolo.com/) backend
 that interfaces with a Postgres database. It currently supports models
 for products, users, and carts. The JSON api is reached from the /api
 route which is what standard frameworks accept. There is a parallel
-API for returning HTML (at /html/) since this is preferred for one framework, [htmx][https://htmx.org/].
+API for returning HTML (at /html/) since this is preferred for one framework, [htmx](https://htmx.org/).
 
 ### Tailwind
 
-There is support for [tailwind][https://tailwindcss.com/] so styling can be consistent, but
+There is support for [tailwind](https://tailwindcss.com/) so styling can be consistent, but
 this is not set in stone yet.
 
 ## Linting
 
-We use [prettier][https://prettier.io/] for formatting, you can run
+We use [prettier](https://prettier.io/) for formatting, you can run
 
 ```bash
 
