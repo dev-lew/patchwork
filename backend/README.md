@@ -18,7 +18,7 @@ this is not set in stone yet.
 We use [prettier](https://prettier.io/) for formatting, you can run
 
 ```bash
-
+npm run format
 ```
 
 ## pyproject.toml / dependencies
