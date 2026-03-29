@@ -1,2 +1,42 @@
 /* Used only for building with tailwind */
 @import "tailwindcss";
+
+@layer base {
+  /* Pulled from lilluvdog style sheet */
+  :root {
+    --color-base-accent-1: 63, 68, 63;
+    --color-base-background-1: 255, 255, 255;
+    --color-base-background-2: 249, 246, 241;
+    --color-base-solid-button-labels: 255, 255, 255;
+    --color-base-text: 63, 68, 63;
+    --font-body-family: Assistant, sans-serif;
+    --font-body-style: normal;
+    --font-body-weight-bold: 700;
+    --font-body-weight: 400;
+    --font-heading-family: Assistant, sans-serif;
+    --font-heading-style: normal;
+    --font-heading-weight: 400;
+  }
+
+  :root {
+    --color-accent: rgb(var(--color-base-accent-1));
+    --color-bg-soft: rgb(var(--color-base-background-2));
+    --color-bg: rgb(var(--color-base-background-1));
+    --color-text: rgb(var(--color-base-text));
+  }
+
+  html {
+    font-family: var(--font-body-family);
+  }
+
+  body {
+    @apply bg-[color:var(--color-bg)] text-[color:var(--color-text)];
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading-family);
+  }
+}
