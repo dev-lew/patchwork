@@ -1,10 +1,5 @@
-{% extends 'layout.html' %} {% block content %}
+{% extends "layout.html" %} {% block content %}
 <div class="mx-auto max-w-[120rem] px-4 py-8">
-  <h2
-    class="mb-6 text-2xl font-normal tracking-wide text-[color:var(--color-text)]"
-  >
-    Products
-  </h2>
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {% for p in products %}
     <div class="group bg-[color:var(--color-bg)]">

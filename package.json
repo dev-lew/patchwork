@@ -8,7 +8,8 @@
     "tailwindcss": "^4.2.2"
   },
   "scripts": {
-    "build:css": "npx @tailwindcss/cli -i backend/app/static/css/input.css -o backend/app/static/css/tailwind.css -m",
-    "format": "npx prettier . --write"
+      "build:css": "npx @tailwindcss/cli -i backend/app/static/css/input.css -o backend/app/static/css/tailwind.css -m",
+      "dev:css": "npx @tailwindcss/cli -i backend/app/static/css/input.css -o backend/app/static/css/tailwind.css --watch",
+      "format": "npx prettier . --write"
   }
 }
