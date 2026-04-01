@@ -8,8 +8,14 @@
     "tailwindcss": "^4.2.2"
   },
   "scripts": {
-      "build:css": "npx @tailwindcss/cli -i backend/app/static/css/input.css -o backend/app/static/css/tailwind.css -m",
-      "dev:css": "npx @tailwindcss/cli -i backend/app/static/css/input.css -o backend/app/static/css/tailwind.css --watch",
+      "build-angular:css": "npx @tailwindcss/cli -i backend/app/static/css/angular/input.css -o backend/app/static/css/angular/tailwind.css -m",
+      "build-htmx:css": "npx @tailwindcss/cli -i backend/app/static/css/htmx/input.css -o backend/app/static/css/htmx/tailwind.css -m",
+      "build-react:css": "npx @tailwindcss/cli -i backend/app/static/css/react/input.css -o backend/app/static/css/react/tailwind.css -m",
+      "build-vue:css": "npx @tailwindcss/cli -i backend/app/static/css/vue/input.css -o backend/app/static/css/vue/tailwind.css -m",
+      "dev-angular:css": "npx @tailwindcss/cli -i backend/app/static/css/angular/input.css -o backend/app/static/css/angular/tailwind.css --watch",
+      "dev-htmx:css": "npx @tailwindcss/cli -i backend/app/static/css/htmx/input.css -o backend/app/static/css/htmx/tailwind.css --watch",
+      "dev-react:css": "npx @tailwindcss/cli -i backend/app/static/css/react/input.css -o backend/app/static/css/react/tailwind.css --watch",
+      "dev-vue:css": "npx @tailwindcss/cli -i backend/app/static/css/vue/input.css -o backend/app/static/css/vue/tailwind.css --watch",
       "format": "npx prettier . --write"
   }
 }
