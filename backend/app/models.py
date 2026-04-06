@@ -39,13 +39,13 @@ class UserSession(SQLModel, table=True):
     __tablename__ = "sessions"
 
     id: str = Field(primary_key=True)
-    user_id: str
+    username: str
     expires_at: dt.datetime
 
 
 class NewUserSession(SQLModel):
     id: str = Field(primary_key=True)
-    user_id: str
+    username: str
     expires_at: dt.datetime
 
 
