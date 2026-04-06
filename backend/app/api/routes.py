@@ -5,13 +5,13 @@ from collections.abc import Sequence
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, Response, status
+from fastapi import APIRouter, Cookie, HTTPException, Query, Response, status
 from pwdlib import PasswordHash
 from pydantic import EmailStr, NonNegativeInt, SecretStr
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import select
 
-from app.dependencies import AuthDep, SessionDep
+from app.dependencies import AuthDep, SessionDep, UserSessionDep
 from app.enums import Category
 from app.models import (
     Cart,
@@ -22,6 +22,7 @@ from app.models import (
     NewUserSession,
     Product,
     User,
+    UserSession,
 )
 
 router = APIRouter()
@@ -58,7 +59,7 @@ async def create_user(
     if session.get(User, user.username) is not None:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    hash_ = hasher.hash(user.password)
+    user.password = hasher.hash(str(user.password))
 
     session.add(User(**user.model_dump()))
     session.commit()
@@ -101,14 +102,14 @@ async def delete_user(username: str, session: SessionDep, _: AuthDep):
     session.commit()
 
 
-@router.post("api/login")
+@router.post("/api/login")
 async def create_user_session(
     username: str, password: SecretStr, session: SessionDep, response: Response
 ):
     user = session.get(User, username)
 
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+    if user is None or hasher.verify(password.get_secret_value(), user.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     user_session = NewUserSession(
         id=secrets.token_urlsafe(),
@@ -116,7 +117,7 @@ async def create_user_session(
         expires_at=dt.datetime.now() + dt.timedelta(days=1),
     )
 
-    session.add(user_session)
+    session.add(UserSession(**user_session.model_dump()))
     session.commit()
 
     response.set_cookie(
@@ -127,10 +128,30 @@ async def create_user_session(
     )
 
 
+@router.post("/api/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user_session(
+    session: SessionDep,
+    user_session_id: Annotated[str | None, Cookie()] = None,
+):
+    if user_session_id is not None:
+        user_session = session.get(UserSession, user_session_id)
+
+        if user_session is not None:
+            session.delete(user_session)
+            session.commit()
+
+
 @router.post("/api/carts", status_code=status.HTTP_201_CREATED)
 async def create_cart(
-    cart: NewCart, response: Response, session: SessionDep, _: AuthDep
+    id: UUID,
+    user_id: str | None,
+    response: Response,
+    user_session: UserSessionDep,
+    session: SessionDep,
+    _: AuthDep,
 ):
+    cart = NewCart(id=id, user_id=user_id, session_id=user_session.id)
+
     session.add(Cart(**cart.model_dump()))
     session.commit()
 
@@ -162,10 +183,16 @@ async def delete_cart(id: UUID, session: SessionDep, _: AuthDep):
 async def create_cart_item(
     cart_id: UUID,
     item: NewCartItem,
+    user_session: UserSessionDep,
     session: SessionDep,
     response: Response,
     _: AuthDep,
 ):
+    cart = session.get(Cart, user_session.id)
+
+    if cart is None or cart.session_id != user_session.id:
+        raise HTTPException(status_code=404, detail="Cart not found")
+
     query = (
         insert(CartItem)
         .values(cart_id=cart_id, product_id=item.product_id, quantity=item.quantity)
@@ -183,11 +210,12 @@ async def create_cart_item(
 
 @router.get("/api/carts/{id}/items")
 async def get_cart_items(
-    id: UUID,
-    session: SessionDep,
+    id: UUID, user_session: UserSessionDep, session: SessionDep, _: AuthDep
 ) -> Sequence[CartItem]:
 
-    if session.get(Cart, id) is None:
+    cart = session.get(Cart, user_session.id)
+
+    if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
 
     query = select(CartItem).where(CartItem.cart_id == id)
@@ -199,8 +227,16 @@ async def get_cart_items(
 async def get_cart_item(
     id: UUID,
     product_id: str,
+    user_session: UserSessionDep,
     session: SessionDep,
+    _: AuthDep,
 ) -> CartItem:
+
+    cart = session.get(Cart, user_session.id)
+
+    if cart is None or cart.session_id != user_session.id:
+        raise HTTPException(status_code=404, detail="Cart not found")
+
     cart_item = session.get(CartItem, (id, product_id))
 
     if cart_item is None:
@@ -213,10 +249,17 @@ async def get_cart_item(
 async def update_cart_item_quantity(
     id: UUID,
     product_id: str,
+    user_session: UserSessionDep,
     quantity: NonNegativeInt,
     session: SessionDep,
     _: AuthDep,
 ):
+
+    cart = session.get(Cart, user_session.id)
+
+    if cart is None or cart.session_id != user_session.id:
+        raise HTTPException(status_code=404, detail="Cart not found")
+
     cart_item = session.get(CartItem, (id, product_id))
 
     if cart_item is None:
@@ -230,7 +273,19 @@ async def update_cart_item_quantity(
 @router.delete(
     "/api/carts/{id}/items/{product_id}", status_code=status.HTTP_204_NO_CONTENT
 )
-async def delete_cart_item(id: UUID, product_id: str, session: SessionDep, _: AuthDep):
+async def delete_cart_item(
+    id: UUID,
+    product_id: str,
+    user_session: UserSessionDep,
+    session: SessionDep,
+    _: AuthDep,
+):
+
+    cart = session.get(Cart, user_session.id)
+
+    if cart is None or cart.session_id != user_session.id:
+        raise HTTPException(status_code=404, detail="Cart not found")
+
     cart_item = session.get(CartItem, (id, product_id))
 
     if cart_item is None:

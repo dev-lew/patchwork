@@ -4,7 +4,7 @@ import secrets
 import sys
 from typing import Annotated
 
-from fastapi import Cookie, Depends, HTTPException
+from fastapi import Cookie, Depends, HTTPException, Response
 from fastapi.security import APIKeyHeader
 from sqlmodel import Session, create_engine, select
 
@@ -33,11 +33,29 @@ SessionDep = Annotated[Session, Depends(get_session)]
 AuthDep = Annotated[str, Depends(auth_api_key)]
 
 
-def get_current_user(
-    session: SessionDep, user_session_id: Annotated[str | None, Cookie()] = None
-):
+def get_current_session(
+    session: SessionDep,
+    response: Response,
+    user_session_id: Annotated[str | None, Cookie()] = None,
+) -> UserSession:
     if user_session_id is None:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        user_session = UserSession(
+            id=secrets.token_urlsafe(),
+            username=None,
+            expires_at=dt.datetime.now() + dt.timedelta(days=1),
+        )
+
+        session.add(user_session)
+        session.commit()
+
+        response.set_cookie(
+            key="session_id",
+            value=user_session.id,
+            httponly=True,
+            samesite="strict",
+        )
+
+        return user_session
 
     user_session = session.get(UserSession, user_session_id)
 
@@ -45,14 +63,11 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Invalid session")
 
     if user_session.expires_at > dt.datetime.now():
-        query = select(UserSession).where(UserSession.id == user_session.id)
-        session.exec(query).all()
+        session.delete(user_session)
 
         raise HTTPException(status_code=401, detail="Session expired")
 
-    current_user = session.get(User, user_session.username)
-
-    return current_user
+    return user_session
 
 
-UserSessionDep = Annotated[User, Depends(get_current_user)]
+UserSessionDep = Annotated[UserSession, Depends(get_current_session)]

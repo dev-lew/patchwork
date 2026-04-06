@@ -16,7 +16,7 @@ CREATE TABLE users (
 
 CREATE TABLE sessions (
     id TEXT PRIMARY KEY,
-    username TEXT NOT NULL,
+    username TEXT,
     expires_at TIMESTAMP NOT NULL
 );
 
