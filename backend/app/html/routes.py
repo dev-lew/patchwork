@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from jinja2 import Environment, FileSystemLoader
 from pydantic import EmailStr, NonNegativeInt
@@ -47,3 +47,8 @@ async def get_products(
     return templates.TemplateResponse(
         request, "products.html", context={"products": products}
     )
+
+
+@router.get("/html/login", response_class=HTMLResponse)
+async def login(request: Request):
+    return templates.TemplateResponse(request, "login.html")
