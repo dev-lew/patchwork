@@ -9,9 +9,9 @@ from fastapi import APIRouter, Cookie, HTTPException, Query, Response, status
 from pwdlib import PasswordHash
 from pydantic import EmailStr, NonNegativeInt, SecretStr
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import select
+from sqlmodel import Session, select
 
-from app.dependencies import AuthDep, SessionDep, UserSessionDep
+from app.dependencies import AuthDep, SessionDep, UserSessionDep, engine
 from app.enums import Category
 from app.models import (
     Cart,
@@ -24,27 +24,54 @@ from app.models import (
     User,
     UserSession,
 )
+from app.product_store import load_seed_data, load_seed_products
 
 router = APIRouter()
 
 hasher = PasswordHash.recommended()
 
 
+@router.get("/api/storefront")
+async def get_storefront():
+    seed = load_seed_data()
+    return {
+        "collection_hero": seed.collection_hero,
+        "products": seed.products,
+    }
+
+
 @router.get("/api/products")
 async def get_products(
-    session: SessionDep, categories: Annotated[list[Category] | None, Query()] = None
+    categories: Annotated[list[Category] | None, Query()] = None,
 ) -> Sequence[Product]:
-    query = select(Product)
+    if engine is None:
+        products = load_seed_products()
+        if categories is None:
+            return products
 
-    if categories is not None:
-        query = query.where(Product.categories.overlap(categories))
+        requested_categories = {str(category) for category in categories}
+        return [
+            product
+            for product in products
+            if requested_categories.intersection(product.categories)
+        ]
 
-    return session.exec(query).all()
+    with Session(engine) as session:
+        query = select(Product)
+
+        if categories is not None:
+            query = query.where(Product.categories.overlap(categories))
+
+        return session.exec(query).all()
 
 
 @router.get("/api/products/{id}")
-async def get_product(id: str, session: SessionDep) -> Product:
-    product = session.get(Product, id)
+async def get_product(id: str) -> Product:
+    if engine is None:
+        product = next((product for product in load_seed_products() if product.id == id), None)
+    else:
+        with Session(engine) as session:
+            product = session.get(Product, id)
 
     if product is None:
         raise HTTPException(status_code=404, detail="User not found")

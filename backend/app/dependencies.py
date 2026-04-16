@@ -1,7 +1,6 @@
 import datetime as dt
 import os
 import secrets
-import sys
 from typing import Annotated
 
 from fastapi import Cookie, Depends, HTTPException, Response
@@ -10,16 +9,18 @@ from sqlmodel import Session, create_engine, select
 
 from app.models import User, UserSession
 
-if (POSTGRES_URL := os.getenv("POSTGRES_URL")) is None:
-    sys.exit("The POSTGRES_URL env variable must be set.")
-
-if (API_KEY := os.getenv("API_KEY")) is None:
-    sys.exit("The API_KEY env variable must be set.")
-
-engine = create_engine(POSTGRES_URL)
+POSTGRES_URL = os.getenv("POSTGRES_URL")
+API_KEY = os.getenv("API_KEY", "dev-api-key")
+engine = create_engine(POSTGRES_URL) if POSTGRES_URL else None
 
 
 def get_session():
+    if engine is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Database is not configured. Set POSTGRES_URL to enable this endpoint.",
+        )
+
     with Session(engine) as session:
         yield session
 
@@ -62,7 +63,7 @@ def get_current_session(
     if user_session is None:
         raise HTTPException(status_code=401, detail="Invalid session")
 
-    if user_session.expires_at > dt.datetime.now():
+    if user_session.expires_at < dt.datetime.now():
         session.delete(user_session)
 
         raise HTTPException(status_code=401, detail="Session expired")

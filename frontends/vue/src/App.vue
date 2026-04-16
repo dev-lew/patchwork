@@ -1,56 +1,42 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const products = ref([]);
+const collectionHero = ref(null);
 const loading = ref(true);
 const error = ref("");
-const selectedCategory = ref("all");
-const searchQuery = ref("");
-const sortBy = ref("featured");
+const announcementMessage = "pre-order the first EWG verified pet wipes";
+const fallbackHero = {
+  title: "Clean Beauty for Dogs",
+  subtitle: "For people who care about their dog's beauty routine as much as their own",
+  video: "/static/videos/lilluv-collection-hero.mp4",
+  poster: "/static/videos/lilluv-collection-hero-poster.jpg",
+};
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
 });
 
-const promoMessages = [
-  "fresh looks for every aisle stroll",
-  "small-batch style, everyday essentials",
-  "designed for giftable moments and daily rituals",
-  "free-flowing storefront energy, now in Vue",
-];
-
-const categoryMeta = {
-  accessories: "easy finishing pieces",
-  bags: "grab-and-go staples",
-  beauty: "daily self-care favorites",
-  clothing: "soft wardrobe basics",
-  decor: "warm, lived-in accents",
-  footwear: "ready-for-anywhere pairs",
-  hair: "good-hair-day helpers",
-  home: "comfort-first living",
-  kitchen: "countertop essentials",
-  outerwear: "light layers",
-  skincare: "simple hydration",
-  tops: "foundation pieces",
-};
-
 async function fetchProducts() {
   loading.value = true;
   error.value = "";
 
   try {
-    const response = await fetch("/api/products");
+    const response = await fetch("/api/storefront");
 
     if (!response.ok) {
       throw new Error(`Request failed with ${response.status}`);
     }
 
     const data = await response.json();
-    products.value = data.map((product, index) => ({
+    collectionHero.value = data.collection_hero;
+    products.value = data.products.map((product) => ({
       ...product,
       price: Number(product.price),
-      accentLabel: buildAccentLabel(product, index),
+      compare_at_price:
+        product.compare_at_price === null ? null : Number(product.compare_at_price),
+      rating: Number(product.rating ?? 0),
     }));
   } catch (err) {
     error.value =
@@ -62,280 +48,169 @@ async function fetchProducts() {
   }
 }
 
-function buildAccentLabel(product, index) {
-  if (product.quantity <= 5) {
-    return "Limited stock";
-  }
-
-  if (product.categories.includes("home") || product.categories.includes("decor")) {
-    return "Best for nesting";
-  }
-
-  if (product.categories.includes("beauty") || product.categories.includes("hair")) {
-    return "Self-care pick";
-  }
-
-  if (product.categories.length > 1) {
-    return "Multi-category favorite";
-  }
-
-  return index % 2 === 0 ? "Editor pick" : "New arrival";
+function formatPrice(value) {
+  return currency.format(value);
 }
 
-const categories = computed(() => {
-  const uniqueCategories = new Set(
-    products.value.flatMap((product) => product.categories),
-  );
-
-  return [
-    {
-      value: "all",
-      label: "Shop all",
-      description: "every curated product",
-    },
-    ...Array.from(uniqueCategories)
-      .sort()
-      .map((category) => ({
-        value: category,
-        label: category.replace("-", " "),
-        description: categoryMeta[category] ?? "curated essentials",
-      })),
-  ];
-});
-
-const featuredProducts = computed(() =>
-  [...products.value]
-    .sort((first, second) => second.quantity - first.quantity)
-    .slice(0, 3),
-);
-
-const filteredProducts = computed(() => {
-  const normalizedQuery = searchQuery.value.trim().toLowerCase();
-
-  let nextProducts = products.value.filter((product) => {
-    const matchesCategory =
-      selectedCategory.value === "all" ||
-      product.categories.includes(selectedCategory.value);
-    const matchesSearch =
-      normalizedQuery.length === 0 ||
-      product.name.toLowerCase().includes(normalizedQuery) ||
-      product.description.toLowerCase().includes(normalizedQuery) ||
-      product.categories.some((category) =>
-        category.toLowerCase().includes(normalizedQuery),
-      );
-
-    return matchesCategory && matchesSearch;
-  });
-
-  if (sortBy.value === "price-low") {
-    nextProducts = [...nextProducts].sort((a, b) => a.price - b.price);
-  } else if (sortBy.value === "price-high") {
-    nextProducts = [...nextProducts].sort((a, b) => b.price - a.price);
-  } else if (sortBy.value === "name") {
-    nextProducts = [...nextProducts].sort((a, b) => a.name.localeCompare(b.name));
-  } else {
-    nextProducts = [...nextProducts].sort((a, b) => {
-      if (a.quantity !== b.quantity) {
-        return b.quantity - a.quantity;
-      }
-
-      return a.name.localeCompare(b.name);
-    });
+function buildPriceLine(product) {
+  if (product.compare_at_price && product.compare_at_price > product.price) {
+    return `${formatPrice(product.price)} sale`;
   }
 
-  return nextProducts;
-});
+  return formatPrice(product.price);
+}
 
-const inventorySummary = computed(() => {
-  const totalUnits = products.value.reduce(
-    (sum, product) => sum + product.quantity,
-    0,
-  );
+function displayTitle(product) {
+  if (!product.variant_label) {
+    return product.name;
+  }
 
-  return `${products.value.length} products, ${totalUnits} units ready to ship`;
-});
+  return product.name.replace(` - ${product.variant_label}`, "");
+}
+
+function starWidth(product) {
+  return `${Math.max(0, Math.min(100, (product.rating / 5) * 100))}%`;
+}
 
 onMounted(fetchProducts);
 </script>
 
 <template>
-  <div class="page-shell">
-    <div class="announcement-bar">
-      <div class="announcement-track">
-        <span v-for="message in promoMessages" :key="message">
-          {{ message }}
-        </span>
-        <span v-for="message in promoMessages" :key="`${message}-clone`">
-          {{ message }}
-        </span>
-      </div>
-    </div>
+  <div class="storefront-shell">
+    <a
+      href="/products/the-daily-wipe"
+      class="announcement-bar"
+      aria-label="Announcement"
+    >
+      <span class="announcement-message">{{ announcementMessage }}</span>
+    </a>
 
     <header class="site-header">
-      <div class="brand-lockup">
-        <span class="eyebrow">Patchwork</span>
-        <h1>Collection Studio</h1>
-      </div>
-      <nav class="top-nav" aria-label="Primary">
-        <a href="#collection">shop all</a>
-        <a href="#featured">featured</a>
-        <a href="#about">about</a>
-      </nav>
-    </header>
+      <div class="site-header-inner">
+        <nav class="header-nav header-nav-left" aria-label="Primary">
+          <a href="/">shop</a>
+          <a href="/">pawprint</a>
+          <a href="/">about</a>
+        </nav>
 
-    <main>
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Vue storefront recreation</p>
-          <h2>For people who care about the shelf, the story, and the scroll.</h2>
-          <p class="hero-text">
-            Inspired by the editorial rhythm of the Lil Luv collection page, this
-            version keeps the airy product-first mood while pulling live inventory
-            from your backend.
-          </p>
-          <div class="hero-actions">
-            <a href="#collection" class="primary-link">Browse collection</a>
-            <span class="inventory-pill">{{ inventorySummary }}</span>
-          </div>
-        </div>
+        <a href="/" class="brand-mark" aria-label="Lil Luv Dog inspired storefront">
+          LIL LUV DOG
+        </a>
 
-        <div class="hero-panel">
-          <div class="hero-panel-inner">
-            <p class="panel-label">Current mood</p>
-            <p class="panel-title">Soft neutrals, bold product photography, clean utility.</p>
-            <ul class="hero-notes">
-              <li>Live search across product names, descriptions, and categories</li>
-              <li>Category filtering pulled from backend data</li>
-              <li>Responsive product cards with stock-aware badges</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="featured" class="featured-strip">
-        <article
-          v-for="product in featuredProducts"
-          :key="product.id"
-          class="feature-card"
-        >
-          <div class="feature-copy">
-            <p class="eyebrow">{{ product.accentLabel }}</p>
-            <h3>{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
-          </div>
-          <span class="feature-price">{{ currency.format(product.price) }}</span>
-        </article>
-      </section>
-
-      <section id="collection" class="collection-shell">
-        <div class="collection-header">
-          <div>
-            <p class="eyebrow">All products</p>
-            <h2>Shop the full assortment</h2>
-          </div>
-
-          <div class="toolbar">
-            <label class="search-field">
-              <span class="sr-only">Search products</span>
-              <input
-                v-model="searchQuery"
-                type="search"
-                placeholder="Search products"
-              />
-            </label>
-
-            <label class="sort-field">
-              <span class="sr-only">Sort products</span>
-              <select v-model="sortBy">
-                <option value="featured">Featured</option>
-                <option value="price-low">Price: low to high</option>
-                <option value="price-high">Price: high to low</option>
-                <option value="name">Name</option>
-              </select>
-            </label>
-          </div>
-        </div>
-
-        <div class="category-row" aria-label="Category filters">
-          <button
-            v-for="category in categories"
-            :key="category.value"
-            :class="[
-              'category-pill',
-              { active: selectedCategory === category.value },
-            ]"
-            @click="selectedCategory = category.value"
-          >
-            <span>{{ category.label }}</span>
-            <small>{{ category.description }}</small>
+        <div class="header-actions" aria-label="Store actions">
+          <button type="button" class="icon-button" aria-label="Search">
+            <span class="header-icon header-icon-search" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="icon-button" aria-label="Account">
+            <span class="header-icon header-icon-account" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="icon-button cart-button" aria-label="Cart">
+            <span class="header-icon header-icon-cart" aria-hidden="true"></span>
+            <span class="cart-count">0</span>
           </button>
         </div>
+      </div>
+    </header>
 
+    <main class="catalog-page">
+      <section class="hero-video-shell">
+        <div class="hero-video-frame" v-if="(collectionHero ?? fallbackHero).video">
+          <video
+            :key="(collectionHero ?? fallbackHero).video"
+            class="hero-video"
+            playsinline
+            autoplay
+            loop
+            muted
+            preload="auto"
+            :poster="(collectionHero ?? fallbackHero).poster ?? undefined"
+          >
+            <source :src="(collectionHero ?? fallbackHero).video" type="video/mp4" />
+          </video>
+
+          <div class="hero-overlay">
+            <h1 class="hero-title">
+              Clean Beauty <i>for Dogs</i>
+            </h1>
+            <p class="hero-subtitle">
+              {{ (collectionHero ?? fallbackHero).subtitle }}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="catalog-grid-shell">
         <div v-if="loading" class="state-card">
-          <p class="eyebrow">Loading</p>
-          <p>Pulling products from the backend.</p>
+          Loading products...
         </div>
 
-        <div v-else-if="error" class="state-card error">
-          <p class="eyebrow">Something went wrong</p>
-          <p>{{ error }}</p>
-        </div>
-
-        <div v-else-if="filteredProducts.length === 0" class="state-card">
-          <p class="eyebrow">No matches</p>
-          <p>Try another category or widen your search.</p>
+        <div v-else-if="error" class="state-card state-card-error">
+          {{ error }}
         </div>
 
         <div v-else class="product-grid">
           <article
-            v-for="product in filteredProducts"
+            v-for="product in products"
             :key="product.id"
             class="product-card"
           >
-            <div class="media-shell">
-              <img :src="product.picture" :alt="product.name" />
-              <span class="product-badge">{{ product.accentLabel }}</span>
+            <div class="product-image-shell">
+              <img
+                :src="product.picture"
+                :alt="product.name"
+                class="product-image"
+              />
+              <div v-if="product.badge_text" class="media-badge">
+                {{ product.badge_text }}
+              </div>
             </div>
 
-            <div class="product-body">
-              <div class="product-heading">
-                <h3>{{ product.name }}</h3>
-                <span class="product-price">
-                  {{ currency.format(product.price) }}
+            <div class="product-copy">
+              <h3 class="product-name">
+                {{ displayTitle(product) }}
+                <span v-if="product.variant_label" class="variant-name">
+                  {{ product.variant_label }}
                 </span>
-              </div>
+              </h3>
 
-              <p class="product-description">{{ product.description }}</p>
-
-              <div class="product-meta">
-                <div class="category-tags">
-                  <span
-                    v-for="category in product.categories"
-                    :key="`${product.id}-${category}`"
-                  >
-                    {{ category }}
+              <div class="rating-row">
+                <div class="star-rating" aria-hidden="true">
+                  <span class="star-rating-base">★★★★★</span>
+                  <span class="star-rating-fill" :style="{ width: starWidth(product) }">
+                    ★★★★★
                   </span>
                 </div>
-                <span
-                  :class="[
-                    'stock-chip',
-                    { soldout: product.quantity === 0 },
-                  ]"
-                >
-                  {{ product.quantity === 0 ? "Out of stock" : `${product.quantity} in stock` }}
-                </span>
+                <span>{{ product.rating.toFixed(1) }} / 5.0</span>
+                <span>({{ product.review_count }})</span>
+              </div>
+
+              <div class="price-block">
+                <div class="price-row">
+                  <span
+                    v-if="product.compare_at_price && product.compare_at_price > product.price"
+                    class="compare-price"
+                  >
+                    {{ formatPrice(product.compare_at_price) }}
+                  </span>
+                  <span class="current-price">{{ formatPrice(product.price) }}</span>
+                </div>
+                <div class="unit-price">Unit price / per</div>
+              </div>
+
+              <button
+                type="button"
+                class="add-button"
+                :disabled="product.quantity === 0"
+              >
+                {{ product.quantity === 0 ? "Out of stock" : "Add to cart" }}
+              </button>
+
+              <div class="stock-row">
+                {{ product.quantity === 0 ? "Out of stock" : buildPriceLine(product) }}
               </div>
             </div>
           </article>
         </div>
-      </section>
-
-      <section id="about" class="about-panel">
-        <p class="eyebrow">Why this structure works</p>
-        <h2>
-          It captures the same browseable, editorial storefront energy while staying
-          grounded in your own product data model.
-        </h2>
       </section>
     </main>
   </div>
