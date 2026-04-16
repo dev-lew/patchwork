@@ -1,26 +1,37 @@
-# Vue Frontend Setup
+# Vue Frontend
 
-1. Prerequisites
-    - Node.js 16+ (or LTS)
-    - npm 8+ or yarn 1+/berry
+This frontend recreates the feel of the Lil Luv Dog collection page using Vue 3
+and Vite, while fetching live product data from the FastAPI backend at
+`/api/products`.
 
-2. Create project (if not already)
-    - `npm create vite@latest . -- --template vue`
-    - OR `yarn create vite . --template vue`
+## Run it
 
-3. Install deps
-    - `npm install`
-    - or `yarn install`
+1. Start the backend from `/backend`.
+2. In `/frontends/vue`, install dependencies:
 
-4. Run dev server
-    - `npm run dev`
-    - `yarn dev`
+```bash
+npm install
+```
 
-5. Build
-    - `npm run build`
-    - `yarn build`
+3. Start the Vue app:
 
-6. Notes
-    - `src/main.js` entry point
-    - `src/App.vue` root component
-    - `vite.config.js` for project config
+```bash
+npm run dev
+```
+
+The Vite dev server runs on `http://127.0.0.1:5173` and proxies `/api` and
+`/static` requests to `http://127.0.0.1:8000`.
+
+## Build
+
+```bash
+npm run build
+```
+
+## Structure
+
+- `index.html`: Vite entry shell
+- `src/main.js`: Vue bootstrap
+- `src/App.vue`: storefront page
+- `src/styles.css`: page styling
+- `vite.config.js`: local dev proxy to FastAPI
