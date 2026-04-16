@@ -9,16 +9,23 @@ CREATE TABLE products (
 );
 
 CREATE TABLE users (
+    username TEXT PRIMARY KEY,
+    password TEXT NOT NULL,
+    email TEXT NOT NULL
+);
+
+CREATE TABLE sessions (
     id TEXT PRIMARY KEY,
-    email TEXT
+    username TEXT,
+    expires_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE carts (
     id UUID PRIMARY KEY,
-    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+    username TEXT REFERENCES users(username) ON DELETE CASCADE,
     session_id TEXT
 
-    CHECK (user_id IS NOT NULL OR session_id IS NOT NULL)
+    CHECK (username IS NOT NULL OR session_id IS NOT NULL)
 );
 
 CREATE TABLE cart_items (

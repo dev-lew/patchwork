@@ -1,8 +1,10 @@
+import datetime as dt
+
 from decimal import Decimal
 from typing import Self
 from uuid import UUID
 
-from pydantic import EmailStr, PositiveInt, model_validator
+from pydantic import EmailStr, PositiveInt, SecretStr, model_validator
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlmodel import Column, Field, SQLModel, Text
 
@@ -22,13 +24,29 @@ class Product(SQLModel, table=True):
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    id: str = Field(primary_key=True)
+    username: str = Field(primary_key=True)
+    password: str
     email: str
 
 
 class NewUser(SQLModel):
-    id: str = Field(primary_key=True)
+    username: str = Field(primary_key=True)
+    password: SecretStr
     email: EmailStr
+
+
+class UserSession(SQLModel, table=True):
+    __tablename__ = "sessions"
+
+    id: str = Field(primary_key=True)
+    username: str | None
+    expires_at: dt.datetime
+
+
+class NewUserSession(SQLModel):
+    id: str = Field(primary_key=True)
+    username: str | None
+    expires_at: dt.datetime
 
 
 class Cart(SQLModel, table=True):

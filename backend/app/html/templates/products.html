@@ -1,5 +1,19 @@
 {% extends "layout.html" %} {% block content %}
-<div class="mx-auto max-w-[120rem] px-4 py-8">
+<div class="mx-auto -mt-20 max-w-[120rem]">
+  <div class="max-h-[35vh] w-full overflow-hidden">
+    <video
+      class="h-full w-full object-cover"
+      playsinline
+      autoplay
+      loop
+      muted
+      preload="auto"
+    >
+      <source src="/static/videos/products-preview.mp4" type="video/mp4" />
+    </video>
+  </div>
+</div>
+<div class="mx-auto max-w-[120rem] px-10 py-8">
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {% for p in products %}
     <div class="group bg-[color:var(--color-bg)]">

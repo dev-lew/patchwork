@@ -27,5 +27,5 @@ jq -c '.products[]' "products.json" | while read -r product; do
           quantity = EXCLUDED.quantity,
           categories = EXCLUDED.categories;"
 
-    PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_URL}" -U "${POSTGRES_USER}" "${POSTGRES_DB}" -c "$SQL"
+    PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_PSQL_URL}" -U "${POSTGRES_USER}" "${POSTGRES_DB}" -c "$SQL"
 done
