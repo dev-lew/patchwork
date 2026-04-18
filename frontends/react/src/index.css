@@ -141,7 +141,7 @@ code {
   }
 
   body {
-    @apply bg-[color:var(--color-bg)] text-[color:var(--color-text)];
+    @apply bg-[#f9f6f1] text-[color:var(--color-text)];
   }
 
   h1,

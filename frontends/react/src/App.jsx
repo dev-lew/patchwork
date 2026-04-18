@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import CollectionHero from "./CollectionHero";
+import "./App.css";
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -13,37 +14,48 @@ export default function App() {
   }, []);
 
   return (
-    <div>
+    <div className="w-full">
       <Header />
-      <main style={{ height: "20vh" }}>
+      <main className="w-full">
         <CollectionHero />
       </main>
-      <div className="p-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {products.map((product) => {
-            const imageUrl = `http://localhost:8000${product.picture}`;
-            console.log(product.picture);
+      {/* Explicitly clear the float from the video hero */}
+      <div className="w-full clear-both"></div>
+      <section className="products-section">
+        <div className="products-shell">
+          <div className="products-grid">
+            {products.map((product) => {
+              const imageUrl = product.picture.startsWith("/")
+                ? `http://localhost:8000${product.picture}`
+                : product.picture;
 
-            return (
-              <div
-                key={product.id}
-                className="bg-white rounded-lg shadow p-4 text-center"
-              >
-                <img
-                  src={imageUrl}
-                  alt={product.name}
-                  className="h-40 w-full object-cover rounded mb-3"
-                />
-
-                <h3 className="text-sm font-medium">
-                  {product.name}
-                </h3>
-              </div>
-            );
-          })}
+              return (
+                <article key={product.id} className="product-card">
+                  <div className="product-card__media">
+                    <img
+                      src={imageUrl}
+                      alt={product.name}
+                      className="product-card__image"
+                    />
+                  </div>
+                  <div className="product-card__content">
+                    <h3 className="product-card__title">{product.name}</h3>
+                    <div className="product-card__meta">
+                      <span className="product-card__stock">
+                        {product.quantity > 0 ? "In stock" : "Out of stock"}
+                      </span>
+                      <span className="product-card__price">
+                        ${Number(product.price).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="product-card__divider" />
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
-
 }
