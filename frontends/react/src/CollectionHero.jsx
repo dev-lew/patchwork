@@ -24,10 +24,9 @@ export default function CollectionHero() {
             loop
             muted
             preload="auto"
-            poster="https://lilluvdog.com/cdn/shop/files/preview_images/c2a0a8cb50594b7ebec8b5c8058cfd74.thumbnail.0000000000_small.jpg?v=1767600372"
           >
             <source
-              src="https://lilluvdog.com/cdn/shop/videos/c/vp/c2a0a8cb50594b7ebec8b5c8058cfd74/c2a0a8cb50594b7ebec8b5c8058cfd74.HD-1080p-7.2Mbps-66374547.mp4?v=0"
+              src="http://localhost:8000/static/videos/products-preview.mp4"
               type="video/mp4"
             />
           </video>
