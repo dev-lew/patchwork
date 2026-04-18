@@ -108,7 +108,7 @@ async def create_user_session(
 ):
     user = session.get(User, username)
 
-    if user is None or hasher.verify(password.get_secret_value(), user.password):
+    if user is None or not hasher.verify(password.get_secret_value(), user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     user_session = NewUserSession(
@@ -131,10 +131,10 @@ async def create_user_session(
 @router.post("/api/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_session(
     session: SessionDep,
-    user_session_id: Annotated[str | None, Cookie()] = None,
+    session_id: Annotated[str | None, Cookie()] = None,
 ):
-    if user_session_id is not None:
-        user_session = session.get(UserSession, user_session_id)
+    if session_id is not None:
+        user_session = session.get(UserSession, session_id)
 
         if user_session is not None:
             session.delete(user_session)
