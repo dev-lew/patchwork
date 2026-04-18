@@ -7,7 +7,11 @@
   >
     <nav class="flex items-center gap-8">
       <a href="#">shop</a>
+      {% if user %}
+      <a href="#" hx-post="/html/logout">sign out</a>
+      {% else %}
       <a href="/html/login">sign in</a>
+      {% endif %}
       <a href="#">about</a>
     </nav>
     <div class="absolute left-1/2 -translate-x-1/2">
@@ -27,7 +31,7 @@
           <path d="M20 20L17 17" stroke-width="1.5"></path>
         </svg>
       </button>
-      <button>
+      <a href="/html/account">
         <svg
           class="h-5 w-5"
           fill="none"
@@ -37,7 +41,7 @@
           <circle cx="12" cy="8" r="4" stroke-width="1.5"></circle>
           <path d="M4 20c1.5-4 14.5-4 16 0" stroke-width="1.5"></path>
         </svg>
-      </button>
+      </a>
       <button>
         <svg
           class="h-5 w-5"
