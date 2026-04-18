@@ -24,6 +24,8 @@ class Product(SQLModel, table=True):
     badge_text: str | None = None
     rating: Decimal = Field(default=Decimal("0.0"), decimal_places=1)
     review_count: int = 0
+    hover_video: str
+    hover_picture: str
     categories: list[str] = Field(sa_column=Column(ARRAY(Text)))
 
 

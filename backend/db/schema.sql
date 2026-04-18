@@ -17,7 +17,9 @@ CREATE TABLE products (
     badge_text TEXT,
     rating DECIMAL(3,1) NOT NULL DEFAULT 0.0,
     review_count INTEGER NOT NULL DEFAULT 0,
-    categories TEXT[] NOT NULL
+    categories TEXT[] NOT NULL,
+    hover_picture TEXT,
+    hover_video TEXT
 );
 
 CREATE TABLE users (

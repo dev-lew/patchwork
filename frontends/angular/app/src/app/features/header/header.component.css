@@ -1,0 +1,157 @@
+.header-group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.announcement-banner {
+  background-color: #96908b;
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1; 
+  position: relative;
+}
+
+.announcement-banner p {
+  color: #ffffff;
+  font-family: 'Apercu', sans-serif;
+  font-size: 13.3px;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.main-header {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background-color: transparent;
+  border-bottom: 1px solid #ffffff;
+  box-sizing: border-box;
+}
+
+.nav-links, .header-icons {
+  flex: 1; 
+  display: flex;
+  align-items: center;
+}
+
+.nav-links {
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 15px;
+  font-family: 'Apercu';
+  text-transform: lowercase;
+}
+
+.logo-container {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.logo-container svg {
+  height: 16px;
+  width: auto;
+}
+
+.logo-container svg path {
+  fill: white;
+}
+
+.header-icons {
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn svg {
+  fill: none;
+  stroke: white;
+}
+
+.main-header.sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #f9f6f1bc;
+  border-bottom: 1px solid #3f443f;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.main-header .nav-links a { color: #ffffff; }
+.main-header.sticky .nav-links a { color: #3f443f; }
+
+.main-header .logo-container svg path { fill: #ffffff; }
+.main-header.sticky .logo-container svg path { fill: #3f443f; }
+
+.main-header .header-icons .icon-btn svg path,
+.main-header .header-icons .icon-btn svg circle,
+.main-header .header-icons .icon-btn svg rect {
+  stroke: #ffffff !important;
+  fill: none !important;
+  transition: stroke 0.3s ease;
+}
+
+.main-header.sticky .header-icons .icon-btn svg path,
+.main-header.sticky .header-icons .icon-btn svg circle,
+.main-header.sticky .header-icons .icon-btn svg rect {
+  stroke: #3f443f !important;
+  fill: none !important;
+}
+
+.main-header .logo-container svg path {
+  fill: #ffffff !important;
+  transition: fill 0.3s ease;
+}
+
+/* Sticky Black */
+.main-header.sticky .logo-container svg path {
+  fill: #3f443f !important;
+}
+.main-header .nav-links a {
+  color: #ffffff !important;
+  transition: color 0.3s ease;
+}
+
+/* Sticky Black */
+.main-header.sticky .nav-links a {
+  color: #3f443f !important;
+}
+
+
+.header-icons {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+
+.logo-container {
+  flex: 0 0 auto;
+}

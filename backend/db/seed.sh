@@ -39,11 +39,13 @@ jq -c '.products[]' "products.json" | while read -r product; do
     BADGE_TEXT=$(nullable_text_sql "$(echo "$product" | jq -r '.badge_text // empty')")
     RATING=$(echo "$product" | jq -r '.rating // 0')
     REVIEW_COUNT=$(echo "$product" | jq -r '.review_count // 0')
+    HOVER_VIDEO=$(escape_sql "$(echo "$product" | jq -r '.hover_video // empty')")
+    HOVER_PICTURE=$(escape_sql "$(echo "$product" | jq -r '.hover_picture // empty')")
 
     CATEGORIES_ARRAY=$(echo "$product" | jq -r '.categories | "{"+join(",")+"}"')
 
-    SQL="INSERT INTO products (id, name, description, picture, price, compare_at_price, quantity, handle, variant_label, badge_text, rating, review_count, categories)
-    VALUES ('${ID}', '${NAME}', '${DESCRIPTION}', '${PICTURE}', ${PRICE}, ${COMPARE_AT_PRICE}, ${QUANTITY}, ${HANDLE}, ${VARIANT_LABEL}, ${BADGE_TEXT}, ${RATING}, ${REVIEW_COUNT}, '${CATEGORIES_ARRAY}'::text[])
+    SQL="INSERT INTO products (id, name, description, picture, price, compare_at_price, quantity, handle, variant_label, badge_text, rating, review_count, hover_video, hover_picture, categories)
+    VALUES ('${ID}', '${NAME}', '${DESCRIPTION}', '${PICTURE}', ${PRICE}, ${COMPARE_AT_PRICE}, ${QUANTITY}, ${HANDLE}, ${VARIANT_LABEL}, ${BADGE_TEXT}, ${RATING}, ${REVIEW_COUNT}, '${HOVER_VIDEO}', '${HOVER_PICTURE}', '${CATEGORIES_ARRAY}'::text[])
     ON CONFLICT (id) DO UPDATE
       SET name = EXCLUDED.name,
           description = EXCLUDED.description,
@@ -56,6 +58,8 @@ jq -c '.products[]' "products.json" | while read -r product; do
           badge_text = EXCLUDED.badge_text,
           rating = EXCLUDED.rating,
           review_count = EXCLUDED.review_count,
+          hover_video = EXCLUDED.hover_video,
+          hover_picture = EXCLUDED.hover_picture,
           categories = EXCLUDED.categories;"
 
     PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_PSQL_URL}" -U "${POSTGRES_USER}" "${POSTGRES_DB}" -c "$SQL"
