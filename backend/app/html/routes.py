@@ -8,11 +8,12 @@ from fastapi.templating import Jinja2Templates
 from jinja2 import Environment, FileSystemLoader
 from pydantic import EmailStr, NonNegativeInt
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import select
+from sqlmodel import Session, select
 
-from app.dependencies import AuthDep, SessionDep
+from app.dependencies import AuthDep, SessionDep, engine
 from app.enums import Category
 from app.models import Cart, CartItem, NewCart, NewCartItem, NewUser, Product, User
+from app.product_store import load_seed_products
 
 router = APIRouter()
 
@@ -35,14 +36,24 @@ async def index():
 @router.get("/html/products", response_class=HTMLResponse)
 async def get_products(
     request: Request,
-    session: SessionDep,
     categories: Annotated[list[Category] | None, Query()] = None,
 ):
-    query = select(Product)
-    if categories:
-        query = query.where(Product.categories.overlap(categories))
+    if engine is None:
+        products = load_seed_products()
+        if categories:
+            requested_categories = {str(category) for category in categories}
+            products = [
+                product
+                for product in products
+                if requested_categories.intersection(product.categories)
+            ]
+    else:
+        with Session(engine) as session:
+            query = select(Product)
+            if categories:
+                query = query.where(Product.categories.overlap(categories))
 
-    products = session.exec(query).all()
+            products = session.exec(query).all()
 
     return templates.TemplateResponse(
         request, "products.html", context={"products": products}

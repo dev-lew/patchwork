@@ -1,0 +1,158 @@
+
+.product-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f6f1;
+  border-bottom: 1px solid rgb(196, 195, 195);
+  padding-bottom: 15px;
+}
+
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #f9f6f1;
+  color: #3f443f;
+  padding: 4px 10px;
+  font-family: 'Apercu';
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 2;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.product-name {
+  font-family: 'EB Garamond';
+  text-transform: capitalize;
+  font-size: 20px;
+  text-align: left;
+  line-height: 26px;
+  margin-top: 0;
+  letter-spacing: normal;
+  color: #3f443f;
+}
+
+.variant {
+  font-family: 'Apercu';
+  font-size: 16px;
+  color: #3f443f;
+  text-transform: capitalize;
+  font-style: normal;
+  font-weight: 400;
+  height: 26px;
+  line-height: 26px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.current-price {
+  font-family: 'Apercu';
+  font-size: 16px;
+  font-weight: 400;
+  height: 19px;
+  color: #3f443f;
+}
+
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.primary-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hover-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.hover-container.active {
+  opacity: 1;
+}
+
+.hover-container img, 
+.hover-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.add-to-cart-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45px;
+  background-color: #3f443fbb;
+  color: #f9f6f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-family: 'Apercu', sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+  z-index: 2;
+  
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.add-to-cart-bar.show {
+  transform: translateY(0);
+}
+
+.hover-container video {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.hover-container:hover video {
+  opacity: 1;
+}
