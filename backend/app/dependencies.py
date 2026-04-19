@@ -16,7 +16,7 @@ if (POSTGRES_URL := os.getenv("POSTGRES_URL")) is None:
 if (API_KEY := os.getenv("API_KEY")) is None:
     sys.exit("The API_KEY env variable must be set.")
 
-engine = create_engine(POSTGRES_URL)
+engine = create_engine(POSTGRES_URL, pool_pre_ping=True)
 
 
 def get_session():
