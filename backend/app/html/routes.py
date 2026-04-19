@@ -223,7 +223,9 @@ def _cart_items_context(session, cart):
     items = []
     subtotal = 0
 
-    cart_items = session.exec(select(CartItem).where(CartItem.cart_id == cart.id)).all()
+    cart_items = session.exec(
+        select(CartItem).where(CartItem.cart_id == cart.id).order_by(CartItem.product_id)
+    ).all()
 
     for ci in cart_items:
         product = session.get(Product, ci.product_id)
