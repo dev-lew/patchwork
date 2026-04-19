@@ -408,11 +408,18 @@ async def get_account(
 
 @router.post("/html/logout")
 async def logout(
+    request: Request,
     session: SessionDep,
     user_session: UserSessionDep,
 ):
     session.delete(user_session)
     session.commit()
+
+    if request.headers.get("HX-Request"):
+        response = HTMLResponse(status_code=200)
+        response.delete_cookie(key="session_id")
+        response.headers["HX-Redirect"] = "/html/login"
+        return response
 
     redirect = RedirectResponse(
         url="/html/login", status_code=status.HTTP_303_SEE_OTHER
