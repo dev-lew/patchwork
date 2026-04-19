@@ -53,7 +53,7 @@ class Cart(SQLModel, table=True):
     __tablename__ = "carts"
 
     id: UUID = Field(primary_key=True)
-    username: str | None = Field(default=None, foreign_key="users.id")
+    username: str | None = Field(default=None, foreign_key="users.username")
     session_id: str | None
 
 
