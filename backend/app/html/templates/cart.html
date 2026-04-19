@@ -1,0 +1,11 @@
+{% extends "layout.html" %}{% block content %}
+<div class="mx-auto max-w-[120rem] px-10 py-16">
+  <h1 class="text-2xl font-semibold tracking-wide text-[color:var(--color-text)]">
+    Your Cart
+  </h1>
+
+  <div class="mt-10" id="cart-items">
+    {% include "partials/cart-items.html" %}
+  </div>
+</div>
+{% endblock %}

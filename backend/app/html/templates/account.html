@@ -1,0 +1,33 @@
+{% extends "layout.html" %}{% block content %}
+<div class="flex min-h-screen items-center justify-center px-4">
+  <div class="border-black-100 w-full max-w-md border p-10">
+    <div class="mb-8 text-center">
+      <h1 class="text-xl tracking-wide">My Account</h1>
+    </div>
+    <div class="space-y-5">
+      <div>
+        <label class="mb-2 block text-xs tracking-wide text-gray-500">
+          USERNAME
+        </label>
+        <p class="px-4 py-3 text-sm">{{ user.username }}</p>
+      </div>
+      <div>
+        <label class="mb-2 block text-xs tracking-wide text-gray-500">
+          EMAIL
+        </label>
+        <p class="px-4 py-3 text-sm">{{ user.email }}</p>
+      </div>
+      <div class="border-t border-gray-100 pt-6">
+        <form method="POST" action="/html/logout">
+          <button
+            type="submit"
+            class="w-full bg-black py-3 text-sm tracking-wide text-white transition hover:bg-[color:var(--color-accent)]"
+          >
+            SIGN OUT
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
