@@ -50,6 +50,31 @@ templates = Jinja2Templates(
 )
 
 
+def _find_cart(session, user_session):
+    if user_session.username is not None:
+        cart = session.exec(
+            select(Cart).where(Cart.username == user_session.username)
+        ).first()
+
+        if cart is not None:
+            return cart
+
+    return session.exec(select(Cart).where(Cart.session_id == user_session.id)).first()
+
+
+def _owns_cart(cart, user_session):
+    if cart is None:
+        return False
+
+    if cart.session_id == user_session.id:
+        return True
+
+    if user_session.username is not None and cart.username == user_session.username:
+        return True
+
+    return False
+
+
 @router.get("/")
 async def index():
     return RedirectResponse(url="/html/products")
@@ -113,7 +138,7 @@ async def get_product(
     if user_session.username is not None:
         user = session.get(User, user_session.username)
 
-    cart = session.exec(select(Cart).where(Cart.session_id == user_session.id)).first()
+    cart = _find_cart(session, user_session)
 
     if cart is None:
         cart = NewCart(
@@ -143,7 +168,7 @@ async def create_cart_item(
 ):
     cart = session.get(Cart, cart_id)
 
-    if cart is None or cart.session_id != user_session.id:
+    if not _owns_cart(cart, user_session):
         raise HTTPException(status_code=404, detail="Cart not found")
 
     product = session.get(Product, product_id)
@@ -182,9 +207,13 @@ async def get_cart(
     if user_session.username is not None:
         user = session.get(User, user_session.username)
 
-    cart = session.exec(select(Cart).where(Cart.session_id == user_session.id)).first()
+    cart = _find_cart(session, user_session)
 
-    ctx = _cart_items_context(session, cart) if cart is not None else {"cart": None, "items": [], "subtotal": 0}
+    ctx = (
+        _cart_items_context(session, cart)
+        if cart is not None
+        else {"cart": None, "items": [], "subtotal": 0}
+    )
     ctx["user"] = user
 
     return templates.TemplateResponse(request, "cart.html", context=ctx)
@@ -194,9 +223,7 @@ def _cart_items_context(session, cart):
     items = []
     subtotal = 0
 
-    cart_items = session.exec(
-        select(CartItem).where(CartItem.cart_id == cart.id)
-    ).all()
+    cart_items = session.exec(select(CartItem).where(CartItem.cart_id == cart.id)).all()
 
     for ci in cart_items:
         product = session.get(Product, ci.product_id)
@@ -218,7 +245,7 @@ async def update_cart_item(
 ):
     cart = session.get(Cart, cart_id)
 
-    if cart is None or cart.session_id != user_session.id:
+    if not _owns_cart(cart, user_session):
         raise HTTPException(status_code=404, detail="Cart not found")
 
     if quantity <= 0:
@@ -234,7 +261,9 @@ async def update_cart_item(
 
     if request.headers.get("HX-Request"):
         return templates.TemplateResponse(
-            request, "partials/cart-items.html", context=_cart_items_context(session, cart)
+            request,
+            "partials/cart-items.html",
+            context=_cart_items_context(session, cart),
         )
 
     return RedirectResponse(url="/html/cart", status_code=status.HTTP_303_SEE_OTHER)
@@ -250,7 +279,7 @@ async def delete_cart_item(
 ):
     cart = session.get(Cart, cart_id)
 
-    if cart is None or cart.session_id != user_session.id:
+    if not _owns_cart(cart, user_session):
         raise HTTPException(status_code=404, detail="Cart not found")
 
     cart_item = session.get(CartItem, (cart_id, product_id))
@@ -262,7 +291,9 @@ async def delete_cart_item(
 
     if request.headers.get("HX-Request"):
         return templates.TemplateResponse(
-            request, "partials/cart-items.html", context=_cart_items_context(session, cart)
+            request,
+            "partials/cart-items.html",
+            context=_cart_items_context(session, cart),
         )
 
     return RedirectResponse(url="/html/cart", status_code=status.HTTP_303_SEE_OTHER)
@@ -286,6 +317,7 @@ async def get_login(
 async def login(
     request: Request,
     session: SessionDep,
+    old_user_session: UserSessionDep,
     username: Annotated[str, Form()],
     password: Annotated[str, Form()],
 ):
@@ -296,6 +328,39 @@ async def login(
             request, "login.html", context={"error": "Invalid username or password."}
         )
 
+    anon_cart = session.exec(
+        select(Cart).where(Cart.session_id == old_user_session.id)
+    ).first()
+
+    if anon_cart is not None and anon_cart.username is None:
+        existing_cart = session.exec(
+            select(Cart).where(Cart.username == username)
+        ).first()
+
+        if existing_cart is None:
+            anon_cart.username = username
+        else:
+            anon_items = session.exec(
+                select(CartItem).where(CartItem.cart_id == anon_cart.id)
+            ).all()
+
+            for item in anon_items:
+                stmt = (
+                    insert(CartItem)
+                    .values(
+                        cart_id=existing_cart.id,
+                        product_id=item.product_id,
+                        quantity=item.quantity,
+                    )
+                    .on_conflict_do_update(
+                        index_elements=["cart_id", "product_id"],
+                        set_={"quantity": CartItem.quantity + item.quantity},
+                    )
+                )
+                session.exec(stmt)
+
+            session.delete(anon_cart)
+
     user_session = UserSession(
         id=secrets.token_urlsafe(),
         username=username,
@@ -303,6 +368,12 @@ async def login(
     )
 
     session.add(user_session)
+
+    user_cart = session.exec(select(Cart).where(Cart.username == username)).first()
+
+    if user_cart is not None:
+        user_cart.session_id = user_session.id
+
     session.commit()
 
     redirect = RedirectResponse(
