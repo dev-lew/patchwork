@@ -135,7 +135,7 @@ async def create_user_session(
 ):
     user = session.get(User, username)
 
-    if user is None or hasher.verify(password.get_secret_value(), user.password):
+    if user is None or not hasher.verify(password.get_secret_value(), user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     user_session = NewUserSession(
@@ -158,10 +158,10 @@ async def create_user_session(
 @router.post("/api/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_session(
     session: SessionDep,
-    user_session_id: Annotated[str | None, Cookie()] = None,
+    session_id: Annotated[str | None, Cookie()] = None,
 ):
-    if user_session_id is not None:
-        user_session = session.get(UserSession, user_session_id)
+    if session_id is not None:
+        user_session = session.get(UserSession, session_id)
 
         if user_session is not None:
             session.delete(user_session)
@@ -171,13 +171,13 @@ async def delete_user_session(
 @router.post("/api/carts", status_code=status.HTTP_201_CREATED)
 async def create_cart(
     id: UUID,
-    user_id: str | None,
+    username: str | None,
     response: Response,
     user_session: UserSessionDep,
     session: SessionDep,
     _: AuthDep,
 ):
-    cart = NewCart(id=id, user_id=user_id, session_id=user_session.id)
+    cart = NewCart(id=id, username=username, session_id=user_session.id)
 
     session.add(Cart(**cart.model_dump()))
     session.commit()
@@ -239,7 +239,6 @@ async def create_cart_item(
 async def get_cart_items(
     id: UUID, user_session: UserSessionDep, session: SessionDep, _: AuthDep
 ) -> Sequence[CartItem]:
-
     cart = session.get(Cart, user_session.id)
 
     if cart is None or cart.session_id != user_session.id:
@@ -258,7 +257,6 @@ async def get_cart_item(
     session: SessionDep,
     _: AuthDep,
 ) -> CartItem:
-
     cart = session.get(Cart, user_session.id)
 
     if cart is None or cart.session_id != user_session.id:
@@ -281,7 +279,6 @@ async def update_cart_item_quantity(
     session: SessionDep,
     _: AuthDep,
 ):
-
     cart = session.get(Cart, user_session.id)
 
     if cart is None or cart.session_id != user_session.id:
@@ -307,7 +304,6 @@ async def delete_cart_item(
     session: SessionDep,
     _: AuthDep,
 ):
-
     cart = session.get(Cart, user_session.id)
 
     if cart is None or cart.session_id != user_session.id:

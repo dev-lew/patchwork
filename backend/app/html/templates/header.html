@@ -6,9 +6,13 @@
     class="flex items-center justify-between px-6 text-sm tracking-wide text-black"
   >
     <nav class="flex items-center gap-8">
-      <a href="#">shop</a>
+      <a href="/html/products">shop</a>
+      {% if user %}
+      <a href="/html/login" hx-post="/html/logout">sign out</a>
+      {% else %}
       <a href="/html/login">sign in</a>
-      <a href="#">about</a>
+      {% endif %}
+      <a href="/html/about">about</a>
     </nav>
     <div class="absolute left-1/2 -translate-x-1/2">
       <a href="/" class="text-lg font-semibold tracking-[0.25em] text-black">
@@ -27,7 +31,7 @@
           <path d="M20 20L17 17" stroke-width="1.5"></path>
         </svg>
       </button>
-      <button>
+      <a href="/html/account">
         <svg
           class="h-5 w-5"
           fill="none"
@@ -37,8 +41,8 @@
           <circle cx="12" cy="8" r="4" stroke-width="1.5"></circle>
           <path d="M4 20c1.5-4 14.5-4 16 0" stroke-width="1.5"></path>
         </svg>
-      </button>
-      <button>
+      </a>
+      <a href="/html/cart">
         <svg
           class="h-5 w-5"
           fill="none"
@@ -49,7 +53,7 @@
           <circle cx="9" cy="21" r="1" />
           <circle cx="18" cy="21" r="1" />
         </svg>
-      </button>
+      </a>
     </div>
   </div>
 </header>

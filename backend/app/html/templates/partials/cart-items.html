@@ -1,0 +1,101 @@
+{% if items %}
+<div class="divide-y divide-black/10">
+  {% for item in items %}
+  <div class="flex gap-6 py-6">
+    <a
+      href="/html/products/{{ item.product.id }}"
+      class="h-32 w-32 shrink-0 overflow-hidden bg-[color:var(--color-bg-soft)]"
+    >
+      <img
+        src="{{ item.product.picture }}"
+        alt="{{ item.product.name }}"
+        class="h-full w-full object-cover"
+      />
+    </a>
+
+    <div class="flex flex-1 flex-col justify-between">
+      <div>
+        <a
+          href="/html/products/{{ item.product.id }}"
+          class="text-sm tracking-wide text-[color:var(--color-text)]"
+        >
+          {{ item.product.name }}
+        </a>
+        <p class="mt-1 text-sm font-semibold text-[color:var(--color-text)]">
+          ${{ '%.2f'|format(item.product.price) }}
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <form
+            hx-post="/html/carts/{{ cart.id }}/items/{{ item.product.id }}"
+            hx-target="#cart-items"
+            hx-swap="innerHTML"
+          >
+            <input type="hidden" name="quantity" value="{{ item.quantity - 1 }}" />
+            <button
+              type="submit"
+              class="flex h-8 w-8 items-center justify-center border border-black/20 text-sm text-[color:var(--color-text)] transition hover:bg-black hover:text-white"
+            >
+              &minus;
+            </button>
+          </form>
+          <span class="w-8 text-center text-sm text-[color:var(--color-text)]">
+            {{ item.quantity }}
+          </span>
+          <form
+            hx-post="/html/carts/{{ cart.id }}/items/{{ item.product.id }}"
+            hx-target="#cart-items"
+            hx-swap="innerHTML"
+          >
+            <input type="hidden" name="quantity" value="{{ item.quantity + 1 }}" />
+            <button
+              type="submit"
+              class="flex h-8 w-8 items-center justify-center border border-black/20 text-sm text-[color:var(--color-text)] transition hover:bg-black hover:text-white"
+            >
+              +
+            </button>
+          </form>
+        </div>
+
+        <form
+          hx-post="/html/carts/{{ cart.id }}/items/{{ item.product.id }}/delete"
+          hx-target="#cart-items"
+          hx-swap="innerHTML"
+        >
+          <button
+            type="submit"
+            class="text-xs tracking-wide text-[color:var(--color-text)] opacity-60 transition hover:opacity-100"
+          >
+            Remove
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="mt-8 border-t border-black/10 pt-6">
+  <div class="flex items-center justify-between">
+    <span class="text-sm tracking-wide text-[color:var(--color-text)]">
+      Subtotal
+    </span>
+    <span class="text-sm font-semibold text-[color:var(--color-text)]">
+      ${{ '%.2f'|format(subtotal) }}
+    </span>
+  </div>
+</div>
+
+{% else %}
+<p class="mt-4 text-sm text-[color:var(--color-text)] opacity-60">
+  Your cart is empty.
+</p>
+<a
+  href="/html/products"
+  class="mt-6 inline-block border border-black bg-black px-8 py-3 text-sm tracking-widest text-white transition hover:bg-white hover:text-black"
+>
+  CONTINUE SHOPPING
+</a>
+{% endif %}

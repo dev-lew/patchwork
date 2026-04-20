@@ -61,18 +61,18 @@ class Cart(SQLModel, table=True):
     __tablename__ = "carts"
 
     id: UUID = Field(primary_key=True)
-    user_id: str | None = Field(default=None, foreign_key="users.id")
+    username: str | None = Field(default=None, foreign_key="users.username")
     session_id: str | None
 
 
 class NewCart(SQLModel):
     id: UUID
-    user_id: str | None
+    username: str | None
     session_id: str | None
 
     @model_validator(mode="after")
     def check_at_least_one(self) -> Self:
-        if not (self.user_id or self.session_id):
+        if not (self.username or self.session_id):
             raise ValueError("Either user_id or session_id must be set")
 
         return self

@@ -1,0 +1,89 @@
+{% extends "layout.html" %}{% block content %}
+<div class="mx-auto max-w-[120rem] px-10 py-16">
+  <a
+    href="/html/products"
+    class="inline-flex items-center gap-1 text-sm tracking-wide text-black opacity-60 transition hover:opacity-100"
+  >
+    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path d="M15 19l-7-7 7-7" stroke-width="1.5"></path>
+    </svg>
+    Back to products
+  </a>
+
+  <div class="mt-10 grid grid-cols-1 gap-16 lg:grid-cols-2">
+    <div class="aspect-square overflow-hidden bg-[color:var(--color-bg-soft)]">
+      <img
+        src="{{ product.picture }}"
+        alt="{{ product.name }}"
+        class="h-full w-full object-cover"
+      />
+    </div>
+
+    <div class="flex flex-col justify-center">
+      <h1
+        class="text-2xl font-semibold tracking-wide text-[color:var(--color-text)]"
+      >
+        {{ product.name }}
+      </h1>
+
+      <p class="mt-2 text-lg font-semibold text-[color:var(--color-text)]">
+        ${{ '%.2f'|format(product.price) }}
+      </p>
+
+      {% if product.quantity > 0 %}
+      <span class="mt-1 text-xs text-[color:var(--color-text)] opacity-70">
+        In stock
+      </span>
+      {% else %}
+      <span class="mt-1 text-xs text-[color:var(--color-text)] opacity-40">
+        Out of stock
+      </span>
+      {% endif %}
+
+      <p
+        class="mt-6 text-sm leading-relaxed text-[color:var(--color-text)] opacity-80"
+      >
+        {{ product.description }}
+      </p>
+
+      {% if product.categories %}
+      <div class="mt-6 flex flex-wrap gap-2">
+        {% for category in product.categories %}
+        <span
+          class="border border-black/20 px-3 py-1 text-xs tracking-wide text-[color:var(--color-text)]"
+        >
+          {{ category }}
+        </span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="mt-10" id="add-to-cart">
+        {% if product.quantity > 0 %}
+        <form
+          hx-post="/html/carts/{{ cart.id }}/items"
+          hx-target="#add-to-cart"
+          hx-swap="innerHTML transition:true"
+        >
+          <input type="hidden" name="product_id" value="{{ product.id }}" />
+          <input type="hidden" name="quantity" value="1" />
+          <button
+            type="submit"
+            class="w-full border border-black bg-black px-8 py-3 text-sm tracking-widest text-white transition hover:bg-white hover:text-black"
+          >
+            ADD TO CART
+          </button>
+        </form>
+        {% else %}
+        <button
+          disabled
+          class="w-full cursor-not-allowed border border-black/30 px-8 py-3 text-sm tracking-widest text-black/30"
+        >
+          OUT OF STOCK
+        </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
