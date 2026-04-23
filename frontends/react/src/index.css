@@ -1,7 +1,9 @@
+@import "tailwindcss";
+
 @font-face {
   font-family: 'Apercu';
-  src: url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/Apercu-Regular.woff2') format('woff2'),
-    url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/Apercu-Regular.woff') format('woff');
+  src: url('https://cdn.shopify.com/s/files/1/0747/3020/9569/files/Apercu-Regular.woff2') format('woff2'),
+    url('https://cdn.shopify.com/s/files/1/0747/3020/9569/files/Apercu-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -9,8 +11,8 @@
 
 @font-face {
   font-family: 'EB Garamond';
-  src: url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Regular.woff2') format('woff2'),
-    url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Regular.woff') format('woff');
+  src: url('https://cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Regular.woff2') format('woff2'),
+    url('https://cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -18,8 +20,8 @@
 
 @font-face {
   font-family: 'EB Garamond';
-  src: url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Italic.woff2') format('woff2'),
-    url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Italic.woff') format('woff');
+  src: url('https://cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Italic.woff2') format('woff2'),
+    url('https://cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Italic.woff') format('woff');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -206,9 +208,6 @@ h5,
   padding: 0 !important;
 }
 
-
-@import "tailwindcss";
-
 @layer base {
 
   /* Pulled from lilluvdog style sheet */
@@ -218,11 +217,11 @@ h5,
     --color-base-background-2: 249, 246, 241;
     --color-base-solid-button-labels: 255, 255, 255;
     --color-base-text: 63, 68, 63;
-    --font-body-family: Assistant, sans-serif;
+    --font-body-family: 'Apercu', sans-serif;
     --font-body-style: normal;
     --font-body-weight-bold: 700;
     --font-body-weight: 400;
-    --font-heading-family: Assistant, sans-serif;
+    --font-heading-family: 'EB Garamond', sans-serif;
     --font-heading-style: normal;
     --font-heading-weight: 400;
   }
