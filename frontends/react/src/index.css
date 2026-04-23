@@ -1,115 +1,212 @@
-/* :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+@font-face {
+  font-family: 'Apercu';
+  src: url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/Apercu-Regular.woff2') format('woff2'),
+    url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/Apercu-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Regular.woff2') format('woff2'),
+    url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Italic.woff2') format('woff2'),
+    url('//cdn.shopify.com/s/files/1/0747/3020/9569/files/EBGaramond-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+* {
+  padding: 0;
+  margin: 0;
 }
 
 body {
+  font-family: 'Apercu';
+  font-weight: normal;
+  font-size: 15px;
+  line-height: 22px;
+  padding: 0;
   margin: 0;
+  color: #3F443F;
+  letter-spacing: normal;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+textarea {
+  font-family: 'Apercu';
+}
+
+body.gradient {
+  background: #eae6e3;
+  background: #f9f6f1;
+}
+
+p {
+  font-family: 'Apercu';
+  font-size: 15px;
+  line-height: 22px;
+  padding: 0;
+  margin: 0;
+  color: #3F443F;
+  letter-spacing: normal;
+  clear: both;
+  font-weight: normal;
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h2,
+h3,
+h4,
+.h0,
+.h1,
+.h2,
+.h3,
+.h4 {
+  font-weight: normal;
+  margin: 0 0 20px;
+  padding: 0;
+  font-family: 'EB Garamond';
+  letter-spacing: normal;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+h1,
+.h1 {
+  font-size: 40px;
+  line-height: 46px;
+
+  @media (max-width: 767px) {
+    font-size: 25px;
+    line-height: 22px;
+    color: #3f443f;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+h2,
+.h2 {
+  font-size: 36px;
+  line-height: 36px;
+}
+
+h3,
+.h3 {
+  font-size: 30px;
+  line-height: 36px;
+
+  @media(max-width:1199px) {
+    font-size: 26px;
+    line-height: 28px;
+  }
+
+  @media(max-width:767px) {
+    font-size: 25px;
+    line-height: 22px;
   }
 }
-p {
+
+h4,
+.h4 {
+  font-size: 26px;
+  line-height: 26px;
+}
+
+h5,
+.h5 {
+  font-family: 'Apercu';
+  font-size: 16px;
+  font-size: 20px;
+  line-height: 22px;
+  letter-spacing: normal;
+  font-weight: 700;
+}
+
+.button {
+  background: #766E5F;
+  padding: 0;
   margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
+  width: 100%;
+  max-width: 165px;
+  height: 49px;
+  border: 1px solid #F9F6F1;
+  color: #fff;
+  font-family: 'Apercu';
   font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-} */
-/* Used only for building with tailwind */
+  letter-spacing: normal;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: inherit;
+  min-height: inherit;
+  transition: background .1s ease-in, color .1s ease-in;
+  -moz-transition: background .1s ease-in, color .1s ease-in;
+  -webkit-transition: background .1s ease-in, color .1s ease-in;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: transparent;
+  border-color: #766E5F;
+  color: #766E5F;
+}
+
+.button.white-button {
+  border-color: #fff;
+  color: #fff;
+}
+
+.button.white-button:hover {
+  background: #fff;
+  color: #766E5F !important;
+  border-color: #fff;
+}
+
+.button::after,
+.button::before {
+  display: none !important;
+}
+
+.hide {
+  display: none !important;
+}
+
+.large--hide {
+  display: none !important;
+}
+
+@media(max-width:991px) {
+  .i--hide {
+    display: none !important;
+  }
+}
+
+@media(max-width:767px) {
+  .large--hide {
+    display: inherit !important;
+  }
+
+  .small--hide {
+    display: none !important;
+  }
+}
+
+.m-0 {
+  margin: 0 !important;
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+
+
 @import "tailwindcss";
 
 @layer base {
