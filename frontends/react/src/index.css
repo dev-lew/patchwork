@@ -113,6 +113,7 @@ code {
 @import "tailwindcss";
 
 @layer base {
+
   /* Pulled from lilluvdog style sheet */
   :root {
     --color-base-accent-1: 63, 68, 63;
@@ -141,7 +142,8 @@ code {
   }
 
   body {
-    @apply bg-[#f9f6f1] text-[color:var(--color-text)];
+    background-color: #f9f6f1;
+    color: var(--color-text);
   }
 
   h1,
