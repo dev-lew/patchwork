@@ -3,6 +3,20 @@ import { onMounted, ref, computed, nextTick } from "vue";
 
 const products = ref([]);
 const collectionHero = ref(null);
+const heroVideoEl = ref(null);
+const videoIsPlaying = ref(true);
+
+function toggleVideo() {
+  const video = heroVideoEl.value;
+  if (!video) return;
+  if (video.paused) {
+    video.play();
+    videoIsPlaying.value = true;
+  } else {
+    video.pause();
+    videoIsPlaying.value = false;
+  }
+}
 const loading = ref(true);
 const error = ref("");
 const announcementMessage = "pre-order the first EWG verified pet wipes";
@@ -323,6 +337,7 @@ onMounted(fetchProducts);
       <section class="hero-video-shell">
         <div class="hero-video-frame" v-if="(collectionHero ?? fallbackHero).video">
           <video
+            ref="heroVideoEl"
             :key="(collectionHero ?? fallbackHero).video"
             class="hero-video"
             playsinline autoplay loop muted preload="auto"
@@ -330,6 +345,20 @@ onMounted(fetchProducts);
           >
             <source :src="(collectionHero ?? fallbackHero).video" type="video/mp4" />
           </video>
+          <button
+            type="button"
+            class="video-control-btn"
+            :aria-label="videoIsPlaying ? 'Pause video' : 'Play video'"
+            @click="toggleVideo"
+          >
+            <svg v-if="!videoIsPlaying" width="14" height="14" viewBox="0 0 14 14">
+              <polygon points="2,1 12,7 2,13" fill="#fff"/>
+            </svg>
+            <svg v-else width="14" height="14" viewBox="0 0 14 14">
+              <line x1="3" y1="0" x2="3" y2="14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="9" y1="0" x2="9" y2="14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </button>
           <div class="hero-overlay">
             <h1 class="hero-title">Clean Beauty <i>for Dogs</i></h1>
             <p class="hero-subtitle">{{ (collectionHero ?? fallbackHero).subtitle }}</p>
@@ -724,5 +753,30 @@ onMounted(fetchProducts);
 
 .add-button {
   transition: background 160ms ease, color 160ms ease, opacity 160ms ease;
+}
+
+/* ── Hero video play/pause button ────────────────────── */
+.video-control-btn {
+  position: absolute;
+  bottom: 1.1rem;
+  right: 1.1rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 160ms ease;
+}
+
+.video-control-btn:hover {
+  opacity: 1;
+}
+
+.video-control-btn svg {
+  display: block;
 }
 </style>
