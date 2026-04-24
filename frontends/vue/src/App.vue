@@ -374,6 +374,16 @@ onMounted(fetchProducts);
             <div class="product-image-shell">
               <img :src="product.picture" :alt="product.name" class="product-image" />
               <div v-if="product.badge_text" class="media-badge">{{ product.badge_text }}</div>
+              <button
+                type="button"
+                class="add-button"
+                :disabled="product.quantity === 0 || addingProductId === product.id"
+                @click="addToCart(product)"
+              >
+                <span v-if="addingProductId === product.id">Adding…</span>
+                <span v-else-if="product.quantity === 0">Out of stock</span>
+                <span v-else>Add to cart</span>
+              </button>
             </div>
             <div class="product-copy">
               <h3 class="product-name">
@@ -398,16 +408,6 @@ onMounted(fetchProducts);
                 </div>
                 <div class="unit-price">Unit price / per</div>
               </div>
-              <button
-                type="button"
-                class="add-button"
-                :disabled="product.quantity === 0 || addingProductId === product.id"
-                @click="addToCart(product)"
-              >
-                <span v-if="addingProductId === product.id">Adding…</span>
-                <span v-else-if="product.quantity === 0">Out of stock</span>
-                <span v-else>Add to cart</span>
-              </button>
               <div class="stock-row">
                 {{ product.quantity === 0 ? "Out of stock" : buildPriceLine(product) }}
               </div>
@@ -751,8 +751,26 @@ onMounted(fetchProducts);
   transform: translateX(100%);
 }
 
+.product-image-shell {
+  position: relative;
+  overflow: hidden;
+}
+
 .add-button {
-  transition: background 160ms ease, color 160ms ease, opacity 160ms ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 180ms ease;
+  pointer-events: none;
+}
+
+.product-image-shell:hover .add-button {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* ── Hero video play/pause button ────────────────────── */
