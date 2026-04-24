@@ -418,6 +418,7 @@ video {
   font-size: 0.9rem;
   transition:
     background 160ms ease,
+
     color 160ms ease,
     opacity 160ms ease;
 }
@@ -623,6 +624,87 @@ video {
   padding: 0.95rem 1rem;
   cursor: pointer;
   text-transform: lowercase;
+}
+
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.login-panel {
+  width: min(420px, 100%);
+  padding: 2rem;
+  border: 1px solid rgba(63, 68, 63, 0.16);
+  border-radius: 0.75rem;
+  background: rgb(var(--color-background));
+  box-shadow: 0 20px 60px rgba(63, 68, 63, 0.08);
+}
+
+.login-panel h1 {
+  margin: 0 0 1.5rem;
+  font-size: 1.8rem;
+  color: rgb(var(--color-foreground));
+}
+
+.login-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.field-row {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field-row label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.field-row input {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(63, 68, 63, 0.16);
+  border-radius: 0.5rem;
+  font: inherit;
+  color: rgb(var(--color-foreground));
+  background: #fff;
+}
+
+.login-error {
+  margin: 0;
+  color: #9c2d2d;
+  font-size: 0.9rem;
+}
+
+.login-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.primary-button,
+.secondary-button {
+  width: 100%;
+  border: 1px solid rgba(var(--color-button), var(--alpha-button-border));
+  padding: 0.95rem 1rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.primary-button {
+  color: rgb(var(--color-button-text));
+  background: rgba(var(--color-button), var(--alpha-button-background));
+}
+
+.secondary-button {
+  color: rgb(var(--color-foreground));
+  background: transparent;
 }
 
 .cart-upsell {

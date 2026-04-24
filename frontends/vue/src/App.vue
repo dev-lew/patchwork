@@ -78,6 +78,13 @@ const cartOpen = ref(false);
 const cartItems = ref([]);
 const addingProductId = ref(null);
 
+const showLogin = ref(false);
+const loggedIn = ref(false);
+const loginUsername = ref("");
+const loginPassword = ref("");
+const loginError = ref("");
+const loginLoading = ref(false);
+
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -192,11 +199,100 @@ function setQuantity(id, val) {
 function openCart() { cartOpen.value = true; }
 function closeCart() { cartOpen.value = false; }
 
+function openLogin() {
+  loginError.value = "";
+  loginPassword.value = "";
+  showLogin.value = true;
+}
+
+function closeLogin() {
+  showLogin.value = false;
+}
+
+async function loginUser() {
+  loginError.value = "";
+  loginLoading.value = true;
+
+  try {
+    const params = new URLSearchParams({
+      username: loginUsername.value,
+      password: loginPassword.value,
+    });
+
+    const response = await fetch(`/api/login?${params.toString()}`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      const message = body?.detail || "Invalid username or password.";
+      throw new Error(message);
+    }
+
+    loggedIn.value = true;
+    showLogin.value = false;
+  } catch (error) {
+    loginError.value = error instanceof Error ? error.message : "Login failed.";
+  } finally {
+    loginLoading.value = false;
+  }
+}
+
+async function logoutUser() {
+  await fetch("/api/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+  loggedIn.value = false;
+}
+
 onMounted(fetchProducts);
 </script>
 
 <template>
-  <div class="storefront-shell">
+  <div v-if="showLogin" class="login-shell">
+    <div class="login-panel">
+      <h1>Sign in</h1>
+
+      <form @submit.prevent="loginUser" class="login-form">
+        <div class="field-row">
+          <label for="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            v-model="loginUsername"
+            required
+            autocomplete="username"
+          />
+        </div>
+
+        <div class="field-row">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            v-model="loginPassword"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+
+        <p v-if="loginError" class="login-error">{{ loginError }}</p>
+
+        <div class="login-actions">
+          <button type="button" class="secondary-button" @click="closeLogin">
+            Cancel
+          </button>
+          <button type="submit" class="primary-button" :disabled="loginLoading">
+            {{ loginLoading ? 'Signing in…' : 'Sign in' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div v-else class="storefront-shell">
     <a href="/products/the-daily-wipe" class="announcement-bar" aria-label="Announcement">
       <span class="announcement-message">{{ announcementMessage }}</span>
     </a>
@@ -226,7 +322,12 @@ onMounted(fetchProducts);
               <path fill="#3f443f" d="M.865 15.978a.5.5 0 0 0 .707.707l7.433-7.431 7.579 7.282a.501.501 0 0 0 .846-.37.5.5 0 0 0-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 1 0-.707-.708L8.991 7.853 1.413.573a.5.5 0 1 0-.693.72l7.563 7.268z"/>
             </svg>
           </button>
-          <button type="button" class="icon-button" aria-label="Account">
+          <button
+            type="button"
+            class="icon-button"
+            :aria-label="loggedIn ? 'Logout' : 'Sign in'"
+            @click="loggedIn ? logoutUser() : openLogin()"
+          >
             <span class="header-icon header-icon-account" aria-hidden="true"></span>
           </button>
           <button type="button" class="icon-button cart-button" aria-label="Cart" @click="openCart">
