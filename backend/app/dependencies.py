@@ -1,26 +1,30 @@
 import datetime as dt
 import os
 import secrets
+import sys
 from typing import Annotated
 
 from fastapi import Cookie, Depends, HTTPException, Response
 from fastapi.security import APIKeyHeader
-from sqlmodel import Session, create_engine, select
+from sqlmodel import Session, create_engine
 
-from app.models import User, UserSession
+from dotenv import load_dotenv
+import os
 
-POSTGRES_URL = os.getenv("POSTGRES_URL")
-API_KEY = os.getenv("API_KEY", "dev-api-key")
-engine = create_engine(POSTGRES_URL) if POSTGRES_URL else None
+load_dotenv()
+
+from app.models import UserSession
+
+if (POSTGRES_URL := os.getenv("POSTGRES_URL")) is None:
+    sys.exit("The POSTGRES_URL env variable must be set.")
+
+if (API_KEY := os.getenv("API_KEY")) is None:
+    sys.exit("The API_KEY env variable must be set.")
+
+engine = create_engine(POSTGRES_URL, pool_pre_ping=True)
 
 
 def get_session():
-    if engine is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Database is not configured. Set POSTGRES_URL to enable this endpoint.",
-        )
-
     with Session(engine) as session:
         yield session
 
@@ -37,9 +41,9 @@ AuthDep = Annotated[str, Depends(auth_api_key)]
 def get_current_session(
     session: SessionDep,
     response: Response,
-    user_session_id: Annotated[str | None, Cookie()] = None,
+    session_id: Annotated[str | None, Cookie()] = None,
 ) -> UserSession:
-    if user_session_id is None:
+    if session_id is None:
         user_session = UserSession(
             id=secrets.token_urlsafe(),
             username=None,
@@ -58,7 +62,7 @@ def get_current_session(
 
         return user_session
 
-    user_session = session.get(UserSession, user_session_id)
+    user_session = session.get(UserSession, session_id)
 
     if user_session is None:
         raise HTTPException(status_code=401, detail="Invalid session")
