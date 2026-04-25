@@ -1,0 +1,62 @@
+{% if results %}
+<div class="mb-3 flex items-center justify-between gap-4">
+  <p class="text-[0.65rem] tracking-[0.28em] text-black/45 uppercase">
+    {% if query %} {{ results|length }} match{{ 'es' if results|length != 1 else
+    '' }} {% else %} Curated picks {% endif %}
+  </p>
+  {% if query %}
+  <p class="text-xs text-black/50">For "{{ query }}"</p>
+  {% endif %}
+</div>
+
+<div class="grid gap-x-8 gap-y-1 sm:grid-cols-2 xl:grid-cols-3">
+  {% for p in results %}
+  <a
+    href="/html/products/{{ p.id }}"
+    class="group flex items-center gap-4 border-t border-black/10 py-4 transition duration-200 hover:border-black/25"
+  >
+    <div
+      class="h-16 w-16 shrink-0 overflow-hidden bg-[color:var(--color-bg-soft)]"
+    >
+      <img
+        src="{{ p.picture }}"
+        alt="{{ p.name }}"
+        class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
+      />
+    </div>
+
+    <div class="min-w-0 flex-1">
+      {% if p.categories %}
+      <p class="text-[0.62rem] tracking-[0.24em] text-black/40 uppercase">
+        {{ p.categories[0] }}
+      </p>
+      {% endif %}
+      <div class="mt-1 flex items-start justify-between gap-4">
+        <p class="truncate text-sm tracking-wide text-black">{{ p.name }}</p>
+        <p class="shrink-0 text-sm font-semibold text-black">
+          ${{ '%.2f'|format(p.price) }}
+        </p>
+      </div>
+      <p class="mt-1 text-xs leading-relaxed text-black/55">
+        {{ p.description[:74] }}{% if p.description|length > 74 %}...{% endif %}
+      </p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% elif query %}
+<div class="border-t border-black/10 px-1 py-8 text-center">
+  <p class="text-[0.65rem] tracking-[0.28em] text-black/45 uppercase">
+    No matches
+  </p>
+  <p class="mt-2 text-sm leading-relaxed text-black/60">
+    Try a different product name, or browse the full collection instead.
+  </p>
+  <a
+    href="/html/products"
+    class="mt-4 inline-flex text-[0.65rem] tracking-[0.28em] text-black/65 uppercase transition hover:text-black"
+  >
+    View all products
+  </a>
+</div>
+{% endif %}

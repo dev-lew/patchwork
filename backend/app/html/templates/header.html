@@ -1,59 +1,144 @@
 <header
   id="site-header"
-  class="sticky top-0 left-0 z-50 w-full border-b border-black py-4 duration-400"
+  class="sticky top-0 left-0 z-50 w-full border-b border-black duration-400"
 >
+  <input id="header-search-open" type="checkbox" class="peer sr-only" />
   <div
-    class="flex items-center justify-between px-6 text-sm tracking-wide text-black"
+    class="px-6 transition-[background-color,backdrop-filter] duration-300 peer-checked:bg-white/92 peer-checked:backdrop-blur-xl"
   >
-    <nav class="flex items-center gap-8">
-      <a href="/html/products">shop</a>
-      {% if user %}
-      <a href="/html/login" hx-post="/html/logout">sign out</a>
-      {% else %}
-      <a href="/html/login">sign in</a>
-      {% endif %}
-      <a href="/html/about">about</a>
-    </nav>
-    <div class="absolute left-1/2 -translate-x-1/2">
-      <a href="/" class="text-lg font-semibold tracking-[0.25em] text-black">
-        PATCHWORK STORE
-      </a>
+    <div
+      class="flex items-center justify-between py-4 text-sm tracking-wide text-black"
+    >
+      <nav class="flex items-center gap-8">
+        <a href="/html/products" data-header-link>shop</a>
+        {% if user %}
+        <a href="/html/login" hx-post="/html/logout" data-header-link
+          >sign out</a
+        >
+        {% else %}
+        <a href="/html/login" data-header-link>sign in</a>
+        {% endif %}
+        <a href="/html/about" data-header-link>about</a>
+      </nav>
+      <div class="absolute left-1/2 -translate-x-1/2">
+        <a
+          href="/"
+          class="text-lg font-semibold tracking-[0.25em] text-black"
+          data-header-link
+        >
+          PATCHWORK STORE
+        </a>
+      </div>
+      <div class="flex items-center gap-5">
+        <label
+          for="header-search-open"
+          class="cursor-pointer transition hover:opacity-70"
+          aria-label="Toggle search"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            data-header-icon
+          >
+            <circle cx="11" cy="11" r="7" stroke-width="1.5"></circle>
+            <path d="M20 20L17 17" stroke-width="1.5"></path>
+          </svg>
+        </label>
+        <a href="/html/account" data-header-link>
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            data-header-icon
+          >
+            <circle cx="12" cy="8" r="4" stroke-width="1.5"></circle>
+            <path d="M4 20c1.5-4 14.5-4 16 0" stroke-width="1.5"></path>
+          </svg>
+        </a>
+        <a href="/html/cart" data-header-link>
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            data-header-icon
+          >
+            <path d="M6 6h15l-1.5 9h-12z" stroke-width="1.5"></path>
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="18" cy="21" r="1" />
+          </svg>
+        </a>
+      </div>
     </div>
-    <div class="flex items-center gap-5">
-      <button>
-        <svg
-          class="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <circle cx="11" cy="11" r="7" stroke-width="1.5"></circle>
-          <path d="M20 20L17 17" stroke-width="1.5"></path>
-        </svg>
-      </button>
-      <a href="/html/account">
-        <svg
-          class="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <circle cx="12" cy="8" r="4" stroke-width="1.5"></circle>
-          <path d="M4 20c1.5-4 14.5-4 16 0" stroke-width="1.5"></path>
-        </svg>
-      </a>
-      <a href="/html/cart">
-        <svg
-          class="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path d="M6 6h15l-1.5 9h-12z" stroke-width="1.5"></path>
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="18" cy="21" r="1" />
-        </svg>
-      </a>
+  </div>
+
+  <div
+    class="grid grid-rows-[0fr] px-6 transition-[grid-template-rows,background-color,backdrop-filter] duration-300 peer-checked:grid-rows-[1fr] peer-checked:bg-white/92 peer-checked:backdrop-blur-xl"
+  >
+    <div class="overflow-hidden">
+      <div class="border-t border-black/10 pt-4 pb-6">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]">
+          <div class="space-y-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p
+                  class="text-[0.65rem] tracking-[0.28em] text-black/45 uppercase"
+                >
+                  Search the collection
+                </p>
+              </div>
+              <label
+                for="header-search-open"
+                class="cursor-pointer text-[0.65rem] tracking-[0.28em] text-black/45 uppercase transition hover:text-black"
+              >
+                Close
+              </label>
+            </div>
+
+            <div class="flex items-center gap-3 border-b border-black/20 pb-3">
+              <svg
+                class="h-4 w-4 shrink-0 text-black/45"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="7" stroke-width="1.5"></circle>
+                <path d="M20 20L17 17" stroke-width="1.5"></path>
+              </svg>
+              <input
+                id="header-search-input"
+                type="search"
+                name="q"
+                placeholder="Search product names"
+                autocomplete="off"
+                class="w-full bg-transparent text-sm text-black placeholder:text-black/35 focus:outline-none"
+              />
+            </div>
+
+            <a
+              href="/html/products"
+              class="inline-flex text-[0.65rem] tracking-[0.28em] text-black/45 uppercase transition hover:text-black"
+            >
+              View all products
+            </a>
+          </div>
+
+          <div>
+            <div
+              id="header-search-results"
+              class="max-h-[24rem] min-h-[7rem] overflow-y-auto pr-1"
+              hx-get="/html/search"
+              hx-target="this"
+              hx-swap="innerHTML"
+              hx-include="#header-search-input"
+              hx-trigger="change from:#header-search-open, input changed delay:200ms from:#header-search-input, search from:#header-search-input"
+            ></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </header>
