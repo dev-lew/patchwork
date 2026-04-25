@@ -6,12 +6,30 @@ import "./App.css";
 
 export default function App() {
   const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const user = localStorage.getItem("loggedInUser") || null;
+    let localKey = user ? `patchwork_cart_${user}` : 'patchwork_cart_guest';
+    const saved = localStorage.getItem(localKey);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { }
+    }
+    return [];
+  });
   const [addingProductId, setAddingProductId] = useState(null);
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(() => localStorage.getItem("loggedInUser") || null);
+  const [authMode, setAuthMode] = useState("login");
+  const [authUsername, setAuthUsername] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authError, setAuthError] = useState("");
+
+  const [cartId, setCartId] = useState(null);
 
   const [activeVideoSocket, setActiveVideoSocket] = useState(null);
 
@@ -25,7 +43,7 @@ export default function App() {
   ];
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/products")
+    fetch("/api/products")
       .then((res) => res.json())
       .then((data) => setProducts(data.map(product => ({
         ...product,
@@ -33,6 +51,21 @@ export default function App() {
       }))))
       .catch((err) => console.error(err));
   }, []);
+
+  useEffect(() => {
+    if (loggedInUser) {
+      localStorage.setItem("loggedInUser", loggedInUser);
+    } else {
+      localStorage.removeItem("loggedInUser");
+    }
+  }, [loggedInUser]);
+
+
+
+  useEffect(() => {
+    let localKey = loggedInUser ? `patchwork_cart_${loggedInUser}` : 'patchwork_cart_guest';
+    localStorage.setItem(localKey, JSON.stringify(cartItems));
+  }, [cartItems, loggedInUser]);
 
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -57,7 +90,24 @@ export default function App() {
 
   const getImageUrl = (url) => url.startsWith("/") ? `http://localhost:8000${url}` : url;
 
-  function addToCart(product) {
+  async function getOrCreateCartId(fallbackProductId) {
+    if (cartId) return cartId;
+    const targetId = fallbackProductId || (products.length > 0 ? products[0].id : null);
+    if (!targetId) return null;
+
+    try {
+      const res = await fetch(`/html/products/${targetId}`, { credentials: 'include' });
+      const html = await res.text();
+      const match = html.match(/\/html\/carts\/([\w-]+)\/items/);
+      if (match) {
+        setCartId(match[1]);
+        return match[1];
+      }
+    } catch (e) { }
+    return null;
+  }
+
+  async function addToCart(product) {
     setAddingProductId(product.id);
     const existing = cartItems.find((i) => i.id === product.id);
     if (existing) {
@@ -71,37 +121,158 @@ export default function App() {
         quantity: 1
       }]);
     }
+
+    const cid = await getOrCreateCartId(product.id);
+    if (cid) {
+      const formData = new URLSearchParams();
+      formData.append("product_id", product.id);
+      formData.append("quantity", "1");
+      await fetch(`/html/carts/${cid}/items`, {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      }).catch(e => console.error("Add remote error", e));
+    }
+
     setCartOpen(true);
     setSearchOpen(false);
+    setAccountOpen(false);
     setTimeout(() => { setAddingProductId(null); }, 600);
   }
 
-  function removeFromCart(id) {
+  async function removeFromCart(id) {
     setCartItems(cartItems.filter((i) => i.id !== id));
+
+    const cid = await getOrCreateCartId(id);
+    if (cid) {
+      await fetch(`/html/carts/${cid}/items/${id}/delete`, {
+        method: "POST",
+        credentials: "include"
+      }).catch(e => console.error("Delete remote error", e));
+    }
   }
 
-  function updateQuantity(id, delta) {
-    setCartItems(cartItems.map(item => {
-      if (item.id === id) {
-        const q = Math.max(0, item.quantity + delta);
-        return { ...item, quantity: q };
-      }
-      return item;
-    }).filter(i => i.quantity > 0));
+  async function updateQuantity(id, delta) {
+    const item = cartItems.find(i => i.id === id);
+    if (!item) return;
+    const newQty = Math.max(0, item.quantity + delta);
+
+    if (newQty === 0) {
+      return removeFromCart(id);
+    }
+
+    setCartItems(cartItems.map(i => i.id === id ? { ...i, quantity: newQty } : i));
+
+    const cid = await getOrCreateCartId(id);
+    if (cid) {
+      const formData = new URLSearchParams();
+      formData.append("quantity", newQty.toString());
+      await fetch(`/html/carts/${cid}/items/${id}`, {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      }).catch(e => console.error("Update remote error", e));
+    }
   }
 
-  function setQuantity(id, val) {
+  async function setQuantity(id, val) {
     const n = parseInt(val, 10);
     if (isNaN(n) || n <= 0) {
-      removeFromCart(id);
+      return removeFromCart(id);
     } else {
       setCartItems(cartItems.map(item => item.id === id ? { ...item, quantity: n } : item));
+
+      const cid = await getOrCreateCartId(id);
+      if (cid) {
+        const formData = new URLSearchParams();
+        formData.append("quantity", n.toString());
+        await fetch(`/html/carts/${cid}/items/${id}`, {
+          method: "POST",
+          body: formData,
+          credentials: "include"
+        }).catch(e => console.error("Update remote error", e));
+      }
     }
   }
 
   function checkout() {
     setCartItems([]);
     setCartOpen(false);
+  }
+
+  async function handleAuth(e) {
+    e.preventDefault();
+    setAuthError("");
+    try {
+      if (authMode === "register") {
+        const formData = new URLSearchParams();
+        formData.append("username", authUsername);
+        formData.append("email", authEmail);
+        formData.append("password", authPassword);
+        formData.append("confirm_password", authPassword);
+
+        const res = await fetch("/html/account/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: formData,
+          credentials: "include"
+        });
+
+        if (res.url.includes("/html/account/create")) {
+          throw new Error("Registration failed. Verification error or username already taken.");
+        }
+      } else {
+        const loginRes = await fetch(`/api/login?username=${encodeURIComponent(authUsername)}&password=${encodeURIComponent(authPassword)}`, {
+          method: "POST",
+          credentials: "include"
+        });
+        if (!loginRes.ok) {
+          const err = await loginRes.json().catch(() => ({}));
+          throw new Error(err.detail || "Login failed");
+        }
+      }
+
+      setLoggedInUser(authUsername);
+
+      const guestCartStr = localStorage.getItem('patchwork_cart_guest');
+      const userCartStr = localStorage.getItem(`patchwork_cart_${authUsername}`);
+      let userCart = [];
+      if (userCartStr) {
+        try { userCart = JSON.parse(userCartStr); } catch (e) { }
+      }
+      if (guestCartStr) {
+        try {
+          let guestCart = JSON.parse(guestCartStr);
+          for (let item of guestCart) {
+            const existing = userCart.find(i => i.id === item.id);
+            if (existing) existing.quantity += item.quantity;
+            else userCart.push(item);
+          }
+        } catch (e) { }
+        localStorage.removeItem('patchwork_cart_guest');
+      }
+      setCartItems(userCart);
+
+      setAuthUsername("");
+      setAuthPassword("");
+      setAuthEmail("");
+      setAccountOpen(false);
+    } catch (err) {
+      setAuthError(err.message);
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include"
+      });
+    } catch (e) { }
+    setLoggedInUser(null);
+    setCartItems([]);
   }
 
   return (
@@ -111,6 +282,9 @@ export default function App() {
         setSearchOpen={setSearchOpen}
         cartOpen={cartOpen}
         setCartOpen={setCartOpen}
+        accountOpen={accountOpen}
+        setAccountOpen={setAccountOpen}
+        loggedInUser={loggedInUser}
         cartCount={cartCount}
       >
         {searchOpen && (
@@ -209,7 +383,7 @@ export default function App() {
 
                 return (
                   <article key={product.id} className="product-card">
-                    <div 
+                    <div
                       className="product-card__media"
                       onMouseEnter={(e) => setActiveVideoSocket(e.currentTarget.querySelector('.video-socket'))}
                       onMouseLeave={() => setActiveVideoSocket(null)}
@@ -325,6 +499,77 @@ export default function App() {
 
             <div className="cart-drawer-footer">
               <button onClick={checkout} className="checkout-button">check out — {formatPrice(cartTotal)}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {accountOpen && (
+        <div className="cart-drawer-shell" role="dialog" aria-modal="true" aria-label="Account">
+          <button className="cart-overlay" onClick={() => setAccountOpen(false)} aria-label="Close account"></button>
+          <div className="cart-drawer">
+            <div className="cart-drawer-header">
+              <span className="cart-drawer-title">account</span>
+              <button type="button" className="cart-drawer-close search-modal__close-button modal__close-button link link--text focus-inset" aria-label="Close" onClick={() => setAccountOpen(false)}>
+                <svg className="icon icon-close" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M16.5 1.5L1.5 16.5M1.5 1.5L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="cart-drawer-body">
+              {loggedInUser ? (
+                <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  <div style={{ fontSize: '18px' }}>hello, <strong>{loggedInUser}</strong>!</div>
+                  <button type="button" className="checkout-button" onClick={handleLogout} style={{ marginTop: 'auto' }}>log out</button>
+                </div>
+              ) : (
+                <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ fontSize: '18px', marginBottom: '8px' }}>{authMode === 'login' ? 'log in' : 'create account'}</div>
+
+                  {authError && <div style={{ color: '#d9534f', fontSize: '13px', border: '1px solid #d9534f', padding: '10px', borderRadius: '4px' }}>{authError}</div>}
+
+                  <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {authMode === 'register' && (
+                      <input
+                        type="email"
+                        placeholder="email"
+                        required
+                        value={authEmail}
+                        onChange={e => setAuthEmail(e.target.value)}
+                        style={{ padding: '12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '15px' }}
+                      />
+                    )}
+                    <input
+                      type="text"
+                      placeholder="username"
+                      required
+                      value={authUsername}
+                      onChange={e => setAuthUsername(e.target.value)}
+                      style={{ padding: '12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '15px' }}
+                    />
+                    <input
+                      type="password"
+                      placeholder="password"
+                      required
+                      value={authPassword}
+                      onChange={e => setAuthPassword(e.target.value)}
+                      style={{ padding: '12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '15px' }}
+                    />
+                    <button type="submit" className="checkout-button" style={{ marginTop: '12px' }}>
+                      {authMode === 'login' ? 'sign in' : 'register'}
+                    </button>
+                  </form>
+
+                  <button
+                    type="button"
+                    onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setAuthError(""); }}
+                    style={{ background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer', color: '#3f443f', marginTop: '16px', fontSize: '14px' }}
+                  >
+                    {authMode === 'login' ? 'need an account? register' : 'already have an account? log in'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
