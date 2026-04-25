@@ -33,7 +33,11 @@
             hx-target="#cart-items"
             hx-swap="innerHTML"
           >
-            <input type="hidden" name="quantity" value="{{ item.quantity - 1 }}" />
+            <input
+              type="hidden"
+              name="quantity"
+              value="{{ item.quantity - 1 }}"
+            />
             <button
               type="submit"
               class="flex h-8 w-8 items-center justify-center border border-black/20 text-sm text-[color:var(--color-text)] transition hover:bg-black hover:text-white"
@@ -49,7 +53,11 @@
             hx-target="#cart-items"
             hx-swap="innerHTML"
           >
-            <input type="hidden" name="quantity" value="{{ item.quantity + 1 }}" />
+            <input
+              type="hidden"
+              name="quantity"
+              value="{{ item.quantity + 1 }}"
+            />
             <button
               type="submit"
               class="flex h-8 w-8 items-center justify-center border border-black/20 text-sm text-[color:var(--color-text)] transition hover:bg-black hover:text-white"
