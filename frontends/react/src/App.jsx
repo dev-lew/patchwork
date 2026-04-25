@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import Header from "./Header";
 import CollectionHero from "./CollectionHero";
+import HoverVideoController from "./HoverVideoController";
 import "./App.css";
 
 export default function App() {
@@ -11,6 +12,8 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+
+  const [activeVideoSocket, setActiveVideoSocket] = useState(null);
 
   const searchInputRef = useRef(null);
 
@@ -206,19 +209,27 @@ export default function App() {
 
                 return (
                   <article key={product.id} className="product-card">
-                    <div className="product-card__media">
-                      <img
-                        src={imageUrl}
-                        alt={product.name}
-                        className="product-card__image"
-                      />
-                      <button
-                        className="product-card__add-banner"
-                        onClick={() => addToCart(product)}
-                        disabled={product.quantity === 0 || addingProductId === product.id}
-                      >
-                        {addingProductId === product.id ? "Adding..." : (product.quantity === 0 ? "Out of stock" : "Add to cart")}
-                      </button>
+                    <div 
+                      className="product-card__media"
+                      onMouseEnter={(e) => setActiveVideoSocket(e.currentTarget.querySelector('.video-socket'))}
+                      onMouseLeave={() => setActiveVideoSocket(null)}
+                    >
+                      <div className="product-card__media-inner">
+                        <img
+                          src={imageUrl}
+                          alt={product.name}
+                          className="product-card__image"
+                        />
+                        <div className="video-socket"></div>
+                        <button
+                          className="product-card__add-banner"
+                          style={{ zIndex: 2 }}
+                          onClick={() => addToCart(product)}
+                          disabled={product.quantity === 0 || addingProductId === product.id}
+                        >
+                          {addingProductId === product.id ? "Adding..." : (product.quantity === 0 ? "Out of stock" : "Add to cart")}
+                        </button>
+                      </div>
                     </div>
                     <div className="product-card__content">
                       <h3 className="product-card__title">{product.name}</h3>
@@ -318,6 +329,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <HoverVideoController activeSocket={activeVideoSocket} />
     </div>
   );
 }
