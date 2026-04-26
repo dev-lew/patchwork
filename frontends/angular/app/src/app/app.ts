@@ -1,13 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from './features/header/header.component';
-import { ProductsComponent } from './features/products/products.component';
-import { HeroComponent } from './features/hero/hero.component';
-import { FooterComponent } from './features/footer/footer.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, ProductsComponent, HeroComponent, FooterComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -81,14 +81,17 @@ async def get_product(id: str) -> Product:
 
 @router.post("/api/users", status_code=status.HTTP_201_CREATED)
 async def create_user(
-    user: NewUser, session: SessionDep, response: Response, _: AuthDep
+    user: NewUser, session: SessionDep, response: Response,
 ):
     if session.get(User, user.username) is not None:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    user.password = hasher.hash(str(user.password))
+    pwd = user.password.get_secret_value()
 
-    session.add(User(**user.model_dump()))
+    user_data = user.model_dump()
+    user_data["password"] = hasher.hash(pwd)
+
+    session.add(User(**user_data))
     session.commit()
 
     response.headers["Location"] = f"/users/account"
@@ -171,11 +174,11 @@ async def delete_user_session(
 @router.post("/api/carts", status_code=status.HTTP_201_CREATED)
 async def create_cart(
     id: UUID,
-    username: str | None,
     response: Response,
     user_session: UserSessionDep,
     session: SessionDep,
     _: AuthDep,
+    username: str | None = None,
 ):
     cart = NewCart(id=id, username=username, session_id=user_session.id)
 
@@ -215,7 +218,7 @@ async def create_cart_item(
     response: Response,
     _: AuthDep,
 ):
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, cart_id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -239,7 +242,7 @@ async def create_cart_item(
 async def get_cart_items(
     id: UUID, user_session: UserSessionDep, session: SessionDep, _: AuthDep
 ) -> Sequence[CartItem]:
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -257,7 +260,7 @@ async def get_cart_item(
     session: SessionDep,
     _: AuthDep,
 ) -> CartItem:
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -279,7 +282,7 @@ async def update_cart_item_quantity(
     session: SessionDep,
     _: AuthDep,
 ):
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -304,7 +307,7 @@ async def delete_cart_item(
     session: SessionDep,
     _: AuthDep,
 ):
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")

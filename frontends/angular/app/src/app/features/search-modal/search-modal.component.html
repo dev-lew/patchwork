@@ -1,0 +1,83 @@
+<div class="backdrop" (click)="close.emit()"></div>
+<div class="search-panel" (click)="$event.stopPropagation()">
+
+    <div class="search-input-row">
+
+        <button type="button" class="search__button field__button" aria-label="Search"
+            style="background: transparent; border: none; display: flex; padding: 0;" disabled>
+
+            <svg width="24" height="24" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style="flex-shrink: 0;">
+                <circle cx="7.5" cy="7.5" r="6.81818" stroke="#3F443F" stroke-width="1.36364"></circle>
+                <path d="M11.7852 12.856L14.9994 16.0702" stroke="#3F443F" stroke-width="1.36364"></path>
+            </svg>
+        </button>
+
+        <input #searchInput [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)" class="search-input"
+            type="search" placeholder="search" autocomplete="off" autocorrect="off" spellcheck="false"
+            aria-label="Search products" />
+
+        <button type="button" class="search-modal__close-button modal__close-button link link--text focus-inset"
+            aria-label="Clear" (click)="clearSearch()" *ngIf="searchQuery.trim()"
+            style="display: flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; padding: 0;">
+
+            <svg class="icon icon-close" aria-hidden="true" focusable="false" width="22" height="22" viewBox="0 0 18 18"
+                fill="none">
+                <path d="M16.5 1.5L1.5 16.5M1.5 1.5L16.5 16.5" stroke="#3F443F" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
+
+    </div>
+
+    <div class="search-content">
+        <p class="search-label" *ngIf="!searchQuery.trim()">Popular searches</p>
+        <div class="search-pills" *ngIf="!searchQuery.trim()">
+            <button *ngFor="let term of popularSearches" type="button" class="search-pill"
+                (click)="setSearchQuery(term.name)">
+                {{ term.name | titlecase }}
+            </button>
+        </div>
+
+        <ng-container *ngIf="searchQuery.trim() && searchResults.length > 0; else noResults">
+
+            <p class="search-label">
+                {{ searchResults.length }} result{{ searchResults.length !== 1 ? 's' : '' }}
+            </p>
+
+            <ul class="search-results-list" role="listbox">
+                <li *ngFor="let product of searchResults; trackBy: trackById" class="search-result-item" role="option">
+
+                    <div class="search-result-link" (click)="addToCart(product)" style="cursor: pointer;">
+
+                        <div class="search-result-image">
+                            <img [src]="getImageUrl(product.picture)" [alt]="product.name" />
+                        </div>
+
+                        <div class="search-result-copy">
+                            <span class="search-result-name">{{ product.name }}</span>
+                            <span class="search-result-price">{{ formatPrice(product.price) }}</span>
+                        </div>
+
+                        <button type="button" class="search-result-add" (click)="onAddClick($event, product)"
+                            [disabled]="product.quantity === 0">
+
+                            {{ product.quantity === 0 ? 'sold out' : 'add' }}
+                        </button>
+
+                    </div>
+                </li>
+            </ul>
+
+        </ng-container>
+
+        <ng-template #noResults>
+            <div class="search-no-results" *ngIf="searchQuery.trim()">
+                <p>No results for "<strong>{{ searchQuery }}</strong>"</p>
+                <p class="search-no-results-sub">
+                    Try a different search term or browse all products.
+                </p>
+            </div>
+        </ng-template>
+    </div>
+</div>

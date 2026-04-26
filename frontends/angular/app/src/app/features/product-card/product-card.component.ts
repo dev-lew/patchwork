@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-product-card',
@@ -17,30 +18,18 @@ export class ProductCardComponent {
   
   isHovered = false;
 
+  constructor(private cartService: CartService) { }
+
   toggleHover(state: boolean) {
     this.isHovered = state;
     
-    // Play/Pause video logic
     if (this.videoRef) {
       const video = this.videoRef.nativeElement;
       state ? video.play() : video.pause();
     }
   }
 
-  // playVideo(video: HTMLVideoElement) {
-  //   if (!video) return;
-
-  //   const playPromise = video.play();
-
-  //   // important: avoid uncaught promise errors in some browsers
-  //   if (playPromise !== undefined) {
-  //     playPromise.catch(() => {});
-  //   }
-  // }
-
-  // pauseVideo(video: HTMLVideoElement) {
-  //   if (!video) return;
-  //   video.pause();
-  //   video.currentTime = 0; // optional: reset for consistent hover UX
-  // }
+  async addToCart(product: Product): Promise<void> {
+    await this.cartService.addToCart(product);
+  }
 }

@@ -1,0 +1,130 @@
+<div class="backdrop" (click)="close.emit()"></div>
+<div class="cart-drawer-shell" role="dialog" aria-modal="true" aria-label="Cart">
+    <button class="cart-overlay" (click)="closeCart()" aria-label="Close cart">
+    </button>
+
+    <div class="cart-drawer">
+
+        <div class="cart-drawer-header">
+            <span class="cart-drawer-title">Cart</span>
+
+            <button type="button"
+                class="cart-drawer-close search-modal__close-button modal__close-button link link--text focus-inset"
+                aria-label="Close" (click)="closeCart()">
+
+                <svg class="icon icon-close" aria-hidden="true" focusable="false" width="18" height="18"
+                    viewBox="0 0 18 18" fill="none">
+
+                    <path d="M16.5 1.5L1.5 16.5M1.5 1.5L16.5 16.5" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="cart-shipping">
+            <p class="cart-shipping-copy">
+                <span *ngIf="shippingRemaining > 0; else freeShipping">
+                    Add {{ formatPrice(shippingRemaining) }} more for free shipping.
+                </span>
+
+                <ng-template #freeShipping>
+                    🎉 You've unlocked free shipping!
+                </ng-template>
+            </p>
+
+            <div class="cart-shipping-bar">
+                <span class="cart-shipping-progress" [style.width.%]="shippingProgress">
+                </span>
+            </div>
+        </div>
+
+        <div class="cart-drawer-body">
+
+            <div *ngIf="cartItems.length === 0; else cartList" class="cart-empty">
+                Your cart is empty.
+            </div>
+
+            <ng-template #cartList>
+                <div class="cart-items">
+
+                    <div class="cart-item" *ngFor="let item of cartItems; trackBy: trackById">
+
+                        <div class="cart-item-image">
+                            <img [src]="getImageUrl(item.picture)" [alt]="item.name" />
+                        </div>
+
+                        <div class="cart-item-info">
+
+                            <div class="cart-item-title">{{ item.name }}</div>
+
+                            <div class="cart-item-price">
+                                {{ formatPrice(item.price) }}
+                            </div>
+
+                            <div class="cart-item-controls">
+
+                                <div class="quantity-control">
+
+                                    <button type="button" class="quantity-button" aria-label="Decrease"
+                                        (click)="updateQuantity(item.id, -1)" [disabled]="item.quantity <= 1">
+                                        -
+                                    </button>
+
+                                    <input class="quantity-input" type="number" [value]="item.quantity" min="1"
+                                        (change)="setQuantity(item.id, $any($event.target).value)" />
+
+                                    <button type="button" class="quantity-button" aria-label="Increase"
+                                        (click)="updateQuantity(item.id, 1)">
+                                        +
+                                    </button>
+
+                                </div>
+
+                                <button type="button" class="cart-remove" (click)="removeFromCart(item.id)">
+                                    Remove
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </ng-template>
+
+        </div>
+
+        <div class="cart-upsell" *ngIf="upsellProducts.length > 0">
+
+            <div class="cart-upsell-header">You'd also luv</div>
+
+            <div class="cart-upsell-list">
+
+                <div class="cart-upsell-item" *ngFor="let up of upsellProducts; trackBy: trackById">
+
+                    <div class="cart-upsell-image">
+                        <img [src]="getImageUrl(up.picture)" [alt]="up.name" />
+                    </div>
+
+                    <div class="cart-upsell-content">
+                        <div class="cart-upsell-name">{{ up.name }}</div>
+                        <div class="cart-upsell-price">{{ formatPrice(up.price) }}</div>
+
+                        <button type="button" class="cart-upsell-button" (click)="addToCart(up)">
+                            Add
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="cart-drawer-footer">
+            <button class="checkout-button" (click)="checkout()">
+                Checkout — {{ formatPrice(cartTotal) }}
+            </button>
+        </div>
+
+    </div>
+</div>

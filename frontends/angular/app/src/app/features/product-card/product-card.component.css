@@ -40,7 +40,6 @@
 .product-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .details-row {
@@ -74,7 +73,8 @@
 
 .price-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .current-price {
@@ -155,4 +155,17 @@
 
 .hover-container:hover video {
   opacity: 1;
+}
+
+.product-stock {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.product-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
 }

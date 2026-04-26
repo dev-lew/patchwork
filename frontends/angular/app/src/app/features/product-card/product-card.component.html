@@ -3,56 +3,32 @@
        (mouseenter)="toggleHover(true)" 
        (mouseleave)="toggleHover(false)">
     
-    <!-- @if (product.badge_text) {
-      <span class="badge">{{ product.badge_text }}</span>
-    } -->
-    <img [src]="baseUrl + product.picture" class="primary-media" [alt]="product.name">
-
-    <div class="hover-container" [class.active]="isHovered">
-      @if (product.hover_video) {
-        <video #hoverVideo [src]="baseUrl + product.hover_video" loop muted playsinline></video>
-      } @else if (product.hover_picture) {
-        <img [src]="baseUrl + product.hover_picture" [alt]="product.name">
-      }
-    </div>
-    <!-- <div
-      class="hover-container"
-      (mouseenter)="playVideo(hoverVideo)"
-      (mouseleave)="pauseVideo(hoverVideo)"
+    <img 
+      [src]="baseUrl + product.picture" 
+      class="primary-media" 
+      [alt]="product.name"
     >
-      <img
-        *ngIf="!product.hover_video"
-        [src]="baseUrl + product.picture"
-        class="primary-media"
-        [alt]="product.name"
-      />
 
-      <video
-        #hoverVideo
-        *ngIf="product.hover_video"
-        [src]="baseUrl + product.hover_video"
-        muted
-        loop
-        playsinline
-        preload="auto"
-        class="primary-media"
-      ></video>
+    <!-- <div class="hover-container" [class.active]="isHovered">
+      @if (product.hover_video) {
+        <video #hoverVideo loop muted playsinline class="primary-media">
+          <source [src]="baseUrl + product.hover_video" type="video/mp4">
+        </video>
+      } @else if (product.hover_picture) {
+        <img 
+          [src]="baseUrl + product.hover_picture" 
+          [alt]="product.name"
+        >
+      }
     </div> -->
 
-
-    <div class="add-to-cart-bar" [class.show]="isHovered">
+    <div class="add-to-cart-bar" (click)="addToCart(product)" [class.show]="isHovered">
       ADD TO CART
     </div>
   </div>
 
-
   <div class="product-info">
     <div class="details-row">
-      <!-- <div class="rating-row">
-        <span class="stars">★★★★★</span>
-        <span class="count">({{ product.review_count }})</span>
-      </div> -->
-      
       <h3 class="product-name">{{ product.name }}</h3>
       
       @if (product.variant_label) {
@@ -61,11 +37,8 @@
     </div>
 
     <div class="price-row">
-      <span class="current-price">${{ product.price }}</span>
-      <!-- @if (product.compare_at_price) {
-        <span class="old-price">${{ product.compare_at_price }}</span>
-      } -->
-    </div>
+      <span class="product-stock">In Stock</span>
+      <span class="product-price">{{ product.price | currency:'USD' }}</span>
   </div>
 </div>
 

@@ -6,25 +6,6 @@
   z-index: 100;
 }
 
-.announcement-banner {
-  background-color: #96908b;
-  width: 100%;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1; 
-  position: relative;
-}
-
-.announcement-banner p {
-  color: #ffffff;
-  font-family: 'Apercu', sans-serif;
-  font-size: 13.3px;
-  margin: 0;
-  letter-spacing: 0.5px;
-}
-
 .main-header {
   width: 100%;
   height: 50px;
@@ -35,44 +16,45 @@
   background-color: transparent;
   border-bottom: 1px solid #ffffff;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, border-bottom 0.3s ease;
 }
 
+/* 1. LAYOUT: Handle Sticky Position 
+   This stays active regardless of the color theme
+*/
+.main-header.sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5000; /* Ensure it stays above everything */
+}
+
+/* 2. THEME: Scrolled but NOT searching (The Creamy Look) */
+.main-header.sticky:not(.searching) {
+  background-color: #f9f6f1bc;
+  border-bottom: 1px solid #3f443f;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* 3. THEME: While searching (The Transparent Look)
+   This overrides the sticky background when the modal is open
+*/
+.main-header.searching {
+  background-color: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Structure & Typography */
 .nav-links, .header-icons {
-  flex: 1; 
+  flex: 1;
   display: flex;
   align-items: center;
-}
-
-.nav-links {
   gap: 20px;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  font-size: 15px;
-  font-family: 'Apercu';
-  text-transform: lowercase;
-}
-
-.logo-container {
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-}
-
-.logo-container svg {
-  height: 16px;
-  width: auto;
-}
-
-.logo-container svg path {
-  fill: white;
 }
 
 .header-icons {
   justify-content: flex-end;
-  gap: 4px;
+  gap: 15px;
 }
 
 .icon-btn {
@@ -84,74 +66,43 @@
   align-items: center;
 }
 
-.icon-btn svg {
-  fill: none;
-  stroke: white;
+.title-text {
+  font-size: 21px;
+  text-decoration: none;
 }
 
-.main-header.sticky {
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: #f9f6f1bc;
-  border-bottom: 1px solid #3f443f;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.main-header .nav-links a { color: #ffffff; }
-.main-header.sticky .nav-links a { color: #3f443f; }
-
-.main-header .logo-container svg path { fill: #ffffff; }
-.main-header.sticky .logo-container svg path { fill: #3f443f; }
-
-.main-header .header-icons .icon-btn svg path,
-.main-header .header-icons .icon-btn svg circle,
-.main-header .header-icons .icon-btn svg rect {
-  stroke: #ffffff !important;
-  fill: none !important;
-  transition: stroke 0.3s ease;
-}
-
-.main-header.sticky .header-icons .icon-btn svg path,
-.main-header.sticky .header-icons .icon-btn svg circle,
-.main-header.sticky .header-icons .icon-btn svg rect {
-  stroke: #3f443f !important;
-  fill: none !important;
-}
-
-.main-header .logo-container svg path {
-  fill: #ffffff !important;
-  transition: fill 0.3s ease;
-}
-
-/* Sticky Black */
-.main-header.sticky .logo-container svg path {
-  fill: #3f443f !important;
-}
-.main-header .nav-links a {
-  color: #ffffff !important;
+.header-text, .nav-links a {
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 14px;
+  text-decoration: none;
   transition: color 0.3s ease;
 }
 
-/* Sticky Black */
-.main-header.sticky .nav-links a {
-  color: #3f443f !important;
+.nav-links a {
+  font-family: 'Apercu', sans-serif;
+  text-transform: lowercase;
 }
 
+/* COLOR CLASSES */
+.text-white { color: #ffffff !important; }
+.text-black { color: #3f443f !important; }
 
-.header-icons {
+/* ICON SYNCING */
+.icon-btn svg path,
+.icon-btn svg circle,
+.icon-btn svg rect,
+.icon-btn svg g {
+  stroke: currentColor !important;
+  fill: none;
+  transition: stroke 0.3s ease;
+}
+
+.header-text {
   display: flex;
-  gap: 15px;
-  flex: 1;
+  gap: 8px;
   justify-content: flex-end;
-}
-
-.nav-links {
-  display: flex;
-  gap: 20px;
-  flex: 1;
-}
-
-.logo-container {
-  flex: 0 0 auto;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
 }
