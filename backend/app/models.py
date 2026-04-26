@@ -17,7 +17,15 @@ class Product(SQLModel, table=True):
     description: str
     picture: str
     price: Decimal = Field(decimal_places=2)
+    compare_at_price: Decimal | None = Field(default=None, decimal_places=2)
     quantity: int = 0
+    handle: str | None = None
+    variant_label: str | None = None
+    badge_text: str | None = None
+    rating: Decimal = Field(default=Decimal("0.0"), decimal_places=1)
+    review_count: int = 0
+    hover_video: str
+    hover_picture: str
     categories: list[str] = Field(sa_column=Column(ARRAY(Text)))
 
 
