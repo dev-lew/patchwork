@@ -1,6 +1,7 @@
 import datetime as dt
 import os
 import secrets
+import sys
 from typing import Annotated
 
 from fastapi import Cookie, Depends, HTTPException, Response
@@ -19,12 +20,6 @@ engine = create_engine(POSTGRES_URL, pool_pre_ping=True)
 
 
 def get_session():
-    if engine is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Database is not configured. Set POSTGRES_URL to enable this endpoint.",
-        )
-
     with Session(engine) as session:
         yield session
 

@@ -16,12 +16,6 @@ from fastapi.templating import Jinja2Templates
 from jinja2 import Environment, FileSystemLoader
 from pwdlib import PasswordHash
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import Session, select
-
-from app.dependencies import AuthDep, SessionDep, engine
-from app.enums import Category
-from app.models import Cart, CartItem, NewCart, NewCartItem, NewUser, Product, User
-from app.product_store import load_seed_products
 from sqlmodel import func, select
 
 from app.dependencies import SessionDep, UserSessionDep
@@ -97,24 +91,19 @@ async def get_about(
 @router.get("/html/products", response_class=HTMLResponse)
 async def get_products(
     request: Request,
+    session: SessionDep,
+    user_session: UserSessionDep,
     categories: Annotated[list[Category] | None, Query()] = None,
 ):
-    if engine is None:
-        products = load_seed_products()
-        if categories:
-            requested_categories = {str(category) for category in categories}
-            products = [
-                product
-                for product in products
-                if requested_categories.intersection(product.categories)
-            ]
-    else:
-        with Session(engine) as session:
-            query = select(Product)
-            if categories:
-                query = query.where(Product.categories.overlap(categories))
+    query = select(Product)
 
-            products = session.exec(query).all()
+    if categories:
+        query = query.where(Product.categories.overlap(categories))
+
+    # TODO: Remove later, only needed to filter out extra
+    query = query.where(func.length(Product.id) == 10)
+
+    products = session.exec(query).all()
 
     user = None
 
