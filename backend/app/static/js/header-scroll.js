@@ -1,10 +1,15 @@
 if (window.location.pathname === "/html/products") {
   const header = document.getElementById("site-header");
-  const headerLinks = document.querySelectorAll("#site-header a");
-  const headerSvgs = document.querySelectorAll("#site-header svg");
+  const headerLinks = document.querySelectorAll(
+    "#site-header [data-header-link]",
+  );
+  const headerSvgs = document.querySelectorAll(
+    "#site-header [data-header-icon]",
+  );
+  const headerSearchOpen = document.getElementById("header-search-open");
 
-  const onScroll = () => {
-    if (window.scrollY > 10) {
+  const syncHeader = () => {
+    if (window.scrollY > 10 || headerSearchOpen?.checked) {
       headerLinks.forEach((el) => {
         el.classList.add("text-black/80");
         el.classList.remove("text-white");
@@ -33,6 +38,7 @@ if (window.location.pathname === "/html/products") {
     }
   };
 
-  window.addEventListener("scroll", onScroll);
-  onScroll();
+  window.addEventListener("scroll", syncHeader);
+  headerSearchOpen?.addEventListener("change", syncHeader);
+  syncHeader();
 }

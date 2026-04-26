@@ -1,6 +1,5 @@
 import datetime as dt
 import secrets
-from collections.abc import Sequence
 from typing import Annotated
 from uuid import UUID, uuid4
 
@@ -10,14 +9,12 @@ from fastapi import (
     HTTPException,
     Query,
     Request,
-    Response,
     status,
 )
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from jinja2 import Environment, FileSystemLoader
 from pwdlib import PasswordHash
-from pydantic import EmailStr, NonNegativeInt
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import Session, select
 
@@ -27,15 +24,12 @@ from app.models import Cart, CartItem, NewCart, NewCartItem, NewUser, Product, U
 from app.product_store import load_seed_products
 from sqlmodel import func, select
 
-from app.dependencies import AuthDep, SessionDep, UserSessionDep
+from app.dependencies import SessionDep, UserSessionDep
 from app.enums import Category
 from app.models import (
     Cart,
     CartItem,
     NewCart,
-    NewCartItem,
-    NewUser,
-    NewUserSession,
     Product,
     User,
     UserSession,
@@ -235,7 +229,9 @@ def _cart_items_context(session, cart):
     subtotal = 0
 
     cart_items = session.exec(
-        select(CartItem).where(CartItem.cart_id == cart.id).order_by(CartItem.product_id)
+        select(CartItem)
+        .where(CartItem.cart_id == cart.id)
+        .order_by(CartItem.product_id)
     ).all()
 
     for ci in cart_items:
@@ -310,6 +306,30 @@ async def delete_cart_item(
         )
 
     return RedirectResponse(url="/html/cart", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.get("/html/search", response_class=HTMLResponse)
+async def search_products(
+    request: Request,
+    session: SessionDep,
+    q: str = "",
+):
+    query = q.strip()
+    search_query = select(Product).where(func.length(Product.id) == 10)
+
+    if query:
+        search_query = search_query.where(Product.name.ilike(f"%{query}%"))
+        search_query = search_query.order_by(Product.name).limit(8)
+    else:
+        search_query = search_query.order_by(Product.name).limit(6)
+
+    results = session.exec(search_query).all()
+
+    return templates.TemplateResponse(
+        request,
+        "partials/search-results.html",
+        context={"results": results, "query": query},
+    )
 
 
 @router.get("/html/login", response_class=HTMLResponse)

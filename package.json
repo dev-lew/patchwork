@@ -2,7 +2,8 @@
   "devDependencies": {
     "lighthouse": "^13.1.0",
     "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2"
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "puppeteer": "^24.42.0"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.2.2",
