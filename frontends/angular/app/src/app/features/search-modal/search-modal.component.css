@@ -1,0 +1,232 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999;
+}
+
+.search-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgb(255, 255, 255);
+  border-bottom: 1px solid rgba(63, 68, 63, 0.14);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.07);
+  overflow-y: auto;
+  max-height: calc(100vh - 60px);
+  z-index: 50;
+  text-align: left;
+}
+
+.search-panel-inner {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1rem 0 1.4rem;
+}
+
+.search-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 2rem;
+  padding-top: 1rem;
+  gap: 12px;
+  border-bottom: 1px solid rgba(63, 68, 63, 0.2);
+  padding-bottom: 0.65rem;
+}
+
+.search-input-icon {
+  flex-shrink: 0;
+  color: rgba(63, 68, 63, 0.45);
+}
+
+.search-input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 2rem;
+  font-style: italic;
+  color: #3f443f;
+  outline: none;
+  padding: 0;
+}
+
+.search-input::-webkit-search-decoration,
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-results-button,
+.search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  display: none;
+}
+
+.search-input::placeholder {
+  color: rgba(63, 68, 63, 0.38);
+  font-style: italic;
+  text-transform: lowercase;
+}
+
+.search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+  border: 0;
+  background: transparent;
+  color: rgba(63, 68, 63, 0.45);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: color 120ms;
+}
+
+.search-panel {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  background: white;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  transform: translateY(-100%);
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.search-bar input {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  outline: none;
+}
+
+.search-bar button {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.search-content {
+  padding: 10px 16px 16px;
+}
+
+.search-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.search-pill {
+  padding: 0.32rem 0.82rem;
+  border: 1px solid rgba(63, 68, 63, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.82rem;
+  color: #3f443f;
+  cursor: pointer;
+  text-transform: lowercase;
+  transition: background 130ms, border-color 130ms;
+}
+
+.search-pill:hover {
+  background: rgba(63, 68, 63, 0.06);
+  border-color: rgba(63, 68, 63, 0.38);
+}
+
+.search-label {
+  margin: 0.9rem 0 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(63, 68, 63, 0.46);
+}
+
+.search-no-results {
+  padding: 1.1rem 0 0.2rem;
+  font-size: 0.9rem;
+}
+
+.search-results-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search-result-item {
+  border-bottom: 1px solid rgba(63, 68, 63, 0.07);
+}
+
+.search-result-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 0;
+}
+
+.search-result-image {
+  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: hidden;
+}
+
+.search-result-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.search-result-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.search-result-name {
+  font-size: 0.9rem;
+  text-transform: lowercase;
+  color: #3f443f;
+}
+
+.search-result-price {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.search-result-add {
+  flex-shrink: 0;
+  padding: 0.38rem 0.95rem;
+  border: 1px solid rgba(63, 68, 63, 0.28);
+  background: transparent;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #3f443f;
+  text-transform: lowercase;
+  cursor: pointer;
+}
+
+/* animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

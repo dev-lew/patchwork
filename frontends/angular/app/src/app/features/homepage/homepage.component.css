@@ -1,0 +1,21 @@
+.header-container {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  background: white;
+}
+
+.search-dropdown {
+  position: relative;
+  z-index: 3000;
+}
+
+.page-content {
+  transition: filter 0.2s ease;
+}
+
+.page-content.blurred {
+  filter: brightness(0.7);
+  pointer-events: none;
+  user-select: none;
+}

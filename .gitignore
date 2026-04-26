@@ -22,3 +22,5 @@ __MACOSX/
 
 # Node
 node_modules/
+
+/frontends/angular/app/environments/*

@@ -1,0 +1,10 @@
+<section class="products-container">
+  <div class="grid">
+    @for (item of products; track item.id) {
+      <app-product-card 
+        [product]="item" 
+        [baseUrl]="imageBaseUrl">
+      </app-product-card>
+    }
+  </div>
+</section>

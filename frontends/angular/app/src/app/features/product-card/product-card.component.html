@@ -1,0 +1,44 @@
+<div class="product-card">
+  <div class="image-wrapper" 
+       (mouseenter)="toggleHover(true)" 
+       (mouseleave)="toggleHover(false)">
+    
+    <img 
+      [src]="baseUrl + product.picture" 
+      class="primary-media" 
+      [alt]="product.name"
+    >
+
+    <!-- <div class="hover-container" [class.active]="isHovered">
+      @if (product.hover_video) {
+        <video #hoverVideo loop muted playsinline class="primary-media">
+          <source [src]="baseUrl + product.hover_video" type="video/mp4">
+        </video>
+      } @else if (product.hover_picture) {
+        <img 
+          [src]="baseUrl + product.hover_picture" 
+          [alt]="product.name"
+        >
+      }
+    </div> -->
+
+    <div class="add-to-cart-bar" (click)="addToCart(product)" [class.show]="isHovered">
+      ADD TO CART
+    </div>
+  </div>
+
+  <div class="product-info">
+    <div class="details-row">
+      <h3 class="product-name">{{ product.name }}</h3>
+      
+      @if (product.variant_label) {
+        <p class="variant">{{ product.variant_label }}</p>
+      }
+    </div>
+
+    <div class="price-row">
+      <span class="product-stock">In Stock</span>
+      <span class="product-price">{{ product.price | currency:'USD' }}</span>
+  </div>
+</div>
+

@@ -9,9 +9,9 @@ from fastapi import APIRouter, Cookie, HTTPException, Query, Response, status
 from pwdlib import PasswordHash
 from pydantic import EmailStr, NonNegativeInt, SecretStr
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import select
+from sqlmodel import Session, select
 
-from app.dependencies import AuthDep, SessionDep, UserSessionDep
+from app.dependencies import AuthDep, SessionDep, UserSessionDep, engine
 from app.enums import Category
 from app.models import (
     Cart,
@@ -24,27 +24,54 @@ from app.models import (
     User,
     UserSession,
 )
+from app.product_store import load_seed_data, load_seed_products
 
 router = APIRouter()
 
 hasher = PasswordHash.recommended()
 
 
+@router.get("/api/storefront")
+async def get_storefront():
+    seed = load_seed_data()
+    return {
+        "collection_hero": seed.collection_hero,
+        "products": seed.products,
+    }
+
+
 @router.get("/api/products")
 async def get_products(
-    session: SessionDep, categories: Annotated[list[Category] | None, Query()] = None
+    categories: Annotated[list[Category] | None, Query()] = None,
 ) -> Sequence[Product]:
-    query = select(Product)
+    if engine is None:
+        products = load_seed_products()
+        if categories is None:
+            return products
 
-    if categories is not None:
-        query = query.where(Product.categories.overlap(categories))
+        requested_categories = {str(category) for category in categories}
+        return [
+            product
+            for product in products
+            if requested_categories.intersection(product.categories)
+        ]
 
-    return session.exec(query).all()
+    with Session(engine) as session:
+        query = select(Product)
+
+        if categories is not None:
+            query = query.where(Product.categories.overlap(categories))
+
+        return session.exec(query).all()
 
 
 @router.get("/api/products/{id}")
-async def get_product(id: str, session: SessionDep) -> Product:
-    product = session.get(Product, id)
+async def get_product(id: str) -> Product:
+    if engine is None:
+        product = next((product for product in load_seed_products() if product.id == id), None)
+    else:
+        with Session(engine) as session:
+            product = session.get(Product, id)
 
     if product is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -54,14 +81,17 @@ async def get_product(id: str, session: SessionDep) -> Product:
 
 @router.post("/api/users", status_code=status.HTTP_201_CREATED)
 async def create_user(
-    user: NewUser, session: SessionDep, response: Response, _: AuthDep
+    user: NewUser, session: SessionDep, response: Response,
 ):
     if session.get(User, user.username) is not None:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    user.password = hasher.hash(str(user.password))
+    pwd = user.password.get_secret_value()
 
-    session.add(User(**user.model_dump()))
+    user_data = user.model_dump()
+    user_data["password"] = hasher.hash(pwd)
+
+    session.add(User(**user_data))
     session.commit()
 
     response.headers["Location"] = f"/users/account"
@@ -144,11 +174,11 @@ async def delete_user_session(
 @router.post("/api/carts", status_code=status.HTTP_201_CREATED)
 async def create_cart(
     id: UUID,
-    username: str | None,
     response: Response,
     user_session: UserSessionDep,
     session: SessionDep,
     _: AuthDep,
+    username: str | None = None,
 ):
     cart = NewCart(id=id, username=username, session_id=user_session.id)
 
@@ -188,7 +218,7 @@ async def create_cart_item(
     response: Response,
     _: AuthDep,
 ):
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, cart_id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -212,7 +242,7 @@ async def create_cart_item(
 async def get_cart_items(
     id: UUID, user_session: UserSessionDep, session: SessionDep, _: AuthDep
 ) -> Sequence[CartItem]:
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -230,7 +260,7 @@ async def get_cart_item(
     session: SessionDep,
     _: AuthDep,
 ) -> CartItem:
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -252,7 +282,7 @@ async def update_cart_item_quantity(
     session: SessionDep,
     _: AuthDep,
 ):
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")
@@ -277,7 +307,7 @@ async def delete_cart_item(
     session: SessionDep,
     _: AuthDep,
 ):
-    cart = session.get(Cart, user_session.id)
+    cart = session.get(Cart, id)
 
     if cart is None or cart.session_id != user_session.id:
         raise HTTPException(status_code=404, detail="Cart not found")

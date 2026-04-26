@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&display=swap');
+@import 'tailwindcss';
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-family: 'Apercu', 'Inter', sans-serif; 
+  background-color: #f9f6f1;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body.no-scroll {
+  position: fixed; 
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding-right: var(--scrollbar-width, 0px); 
+}

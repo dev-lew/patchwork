@@ -1,0 +1,81 @@
+<div class="header-group">
+    <header class="main-header" [class.sticky]="isSticky" [class.searching]="searchOpen">
+
+        <nav class="nav-links">
+            <a href="/" [ngClass]="(isSticky && !searchOpen) ? 'text-black' : 'text-white'">shop</a>
+            <a href="/" [ngClass]="(isSticky && !searchOpen) ? 'text-black' : 'text-white'">pawprint</a>
+
+            <button *ngIf="currentUser$ | async" (click)="onLogout()" class="icon-btn header-text"
+                [ngClass]="(isSticky && !searchOpen) ? 'text-black' : 'text-white'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"
+                        stroke="currentColor" stroke-width="1.05" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="1.05" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M21 12H9" stroke="currentColor" stroke-width="1.05" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Logout
+            </button>
+        </nav>
+
+        <a href="/" class="text-lg font-semibold tracking-[0.25em] title-text"
+            [ngClass]="(isSticky && !searchOpen) ? 'text-black' : 'text-white'">
+            PATCHWORK STORE
+        </a>
+
+        <div class="header-icons">
+            <button class="icon-btn header-text" [ngClass]="(isSticky && !searchOpen) ? 'text-black' : 'text-white'"
+                (click)="onSearchClick()">
+                <svg width="20" height="20" class="icon-search" viewBox="0 0 26 23" fill="none">
+                    <path
+                        d="M11.2266 0.528564C16.7441 0.528816 21.2196 5.01658 21.2197 10.5559C21.2197 16.0953 16.7442 20.583 11.2266 20.5833C5.70872 20.5833 1.23242 16.0955 1.23242 10.5559C1.2325 5.01643 5.70877 0.528564 11.2266 0.528564Z"
+                        stroke="currentColor"></path>
+                    <path d="M18.7695 17.074L25.2677 22.3494" stroke="currentColor"></path>
+                </svg>
+                Search
+            </button>
+
+            <ng-container *ngIf="{ name: currentUser$ | async } as auth">
+                <a [routerLink]="auth.name ? null : '/login'" class="icon-btn header-text"
+                    [ngClass]="(isSticky && !searchOpen) ? 'text-black' : 'text-white'">
+                    <svg width="20" height="20" viewBox="0 0 24 23" fill="none">
+                        <g clip-path="url(#clip0_3544_581)">
+                            <path
+                                d="M16.8811 7.66406C17.1502 10.0624 17.204 15.0576 15.2663 15.8516C13.3286 16.6455 12.1265 15.0245 11.7676 14.1148"
+                                stroke="currentColor" stroke-width="1.05"></path>
+                            <path
+                                d="M6.6541 7.66406C6.38498 10.0624 6.33115 15.0576 8.26884 15.8516C10.2065 16.6455 11.4087 15.0245 11.7676 14.1148"
+                                stroke="currentColor" stroke-width="1.05"></path>
+                            <path
+                                d="M11.2426 1.88923C10.3426 1.47108 7.69849 0.928893 6.42212 2.93603C4.82667 5.44495 1.26758 9.66448 1.26758 10.5768C1.26758 11.4891 2.37212 15.9368 3.84485 16.0508C5.31758 16.1649 7.07857 15.5406 7.2013 14.8564"
+                                stroke="currentColor" stroke-width="1.05"></path>
+                            <path
+                                d="M11.2426 1.88923C12.2426 1.47125 15.1221 0.928933 16.5403 2.93527C18.313 5.4432 22.2676 9.66105 22.2676 10.573C22.2676 11.485 21.0403 15.9309 19.4039 16.0449C17.7676 16.1589 16.1772 15.7609 16.0408 15.0769"
+                                stroke="currentColor" stroke-width="1.05"></path>
+                            <circle cx="11.768" cy="12.9142" r="1.575" stroke="currentColor" stroke-width="1.05">
+                            </circle>
+                            <path d="M7 15C5.8256 15.7619 3.59424 18.4286 4.064 23" stroke="currentColor"></path>
+                            <path d="M16 15C17.1744 15.7619 19.4058 18.4286 18.936 23" stroke="currentColor"></path>
+                        </g>
+                    </svg>
+                    {{ auth.name || 'Account' }}
+                </a>
+            </ng-container>
+
+            <a href="#" class="icon-btn cart-container header-text"
+                [ngClass]="(isSticky && !searchOpen) ? 'text-black' : 'text-white'" (click)="onCartClick()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M15.269 10.6842V4.26925C15.269 2.46369 13.8053 1 11.9998 1H11.2751C9.46955 1 8.00586 2.4637 8.00586 4.26926V10.6842"
+                        stroke="currentColor" stroke-width="1.08975"></path>
+                    <path
+                        d="M5.52441 7.59766H18.0107C19.3665 7.59766 20.5162 8.59446 20.708 9.93652L22.6396 23.4551H0.895508L2.82715 9.93652C3.01897 8.59446 4.16869 7.59766 5.52441 7.59766Z"
+                        stroke="currentColor" stroke-width="1.08975"></path>
+                </svg>
+                Cart ({{ (cartCount$ | async) || 0 }})
+            </a>
+        </div>
+    </header>
+</div>
