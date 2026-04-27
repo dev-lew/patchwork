@@ -4,7 +4,7 @@ import secrets
 import sys
 from typing import Annotated
 
-from fastapi import Cookie, Depends, HTTPException, Response
+from fastapi import Cookie, Depends, HTTPException, Request
 from fastapi.security import APIKeyHeader
 from sqlmodel import Session, create_engine
 
@@ -35,7 +35,7 @@ AuthDep = Annotated[str, Depends(auth_api_key)]
 
 def get_current_session(
     session: SessionDep,
-    response: Response,
+    request: Request,
     session_id: Annotated[str | None, Cookie()] = None,
 ) -> UserSession:
     if session_id is None:
@@ -48,12 +48,7 @@ def get_current_session(
         session.add(user_session)
         session.commit()
 
-        response.set_cookie(
-            key="session_id",
-            value=user_session.id,
-            httponly=True,
-            samesite="strict",
-        )
+        request.state.session_id_cookie = user_session.id
 
         return user_session
 
